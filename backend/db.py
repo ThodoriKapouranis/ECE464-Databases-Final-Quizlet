@@ -1,12 +1,15 @@
+from bson.objectid import ObjectId
 import pymongo
 from datetime import datetime
 from mongoCredentials import MONGO_URI
 from pprint import pprint
+import secrets
 
 client = pymongo.MongoClient(MONGO_URI)
 
 db = client.Quizlet
 users = db.users
+auths = db.auth
 decks = db.decks
 cards = db.cards
 
@@ -25,7 +28,8 @@ def createUserObject( email:str, username:str, password:str ):
         "email": email,
         "password": password,
         "create_date": datetime.now(),
-        "favorite_deck_ids": []
+        "favorite_deck_ids": [],
+        "decks_created": []
     })
 
 def createUser( email:str, username:str, password:str ):
@@ -39,18 +43,45 @@ def createUser( email:str, username:str, password:str ):
 def getUsersByName( username:str ):
     return users.find( 
         {"username": {"$regex": username }},
-        {"username":1, "favorite_deck_ids":1, "create_date":1}
+        {"username":1, "favorite_deck_ids":1, "decks_created": 1, "create_date":1}
     )
-    
-if (__name__ == "__main__"):
-    users.drop()
-    createUser("h0@gmail.com", "Billy Bob", "123")
-    createUser("h1@gmail.com", "Bil", "123")
-    createUser("h2@gmail.com", "Billy John", "123")
-    createUser("h3@gmail.com", "Axel", "123")
-    createUser("h4@gmail.com", "Lima", "123")
 
-    for x in getUsersByName("Billy"):
-        pprint(x)
+def attemptLogin ( email: str, password:str ):   
+    result = users.find_one( {"email":email, "password":password} )
+    if result:
+        auth = creatAuth(result["_id"])
+    else:
+        print("Wrong login, try again!")
+        
+
+def creatAuth( id:ObjectId ):
+    # Check if authentication already exists for the user
+    query = { "uid" : id }
+    newDoc = {"$set" :  {
+                "uid":id, 
+                "token":secrets.token_hex(), 
+                "login_time": datetime.now()}
+            } 
+    
+    result = auths.update_one( query, newDoc, upsert=True )
+    
+    if not result:
+        print("Could not add user to authentication table")
+    else:
+        pprint("LOGGED IN!")
+
+
+
+
+if (__name__ == "__main__"):
+    # users.drop()
+    # auths.drop()
+    createUser("h0@gmail.com", "Billy Bob", "123")
+    attemptLogin("h0@gmail.com", "123")
+    attemptLogin("h0@gmail.com", "124")
+
+
+    # for x in getUsersByName("Billy"):
+    #     pprint(x)
 
 
