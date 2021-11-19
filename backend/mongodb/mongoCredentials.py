@@ -1,0 +1,1 @@
+MONGO_URI= "mongodb+srv://lee_kap:quizlet@quizlet.70mzs.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"

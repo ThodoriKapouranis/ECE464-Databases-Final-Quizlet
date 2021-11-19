@@ -1,6 +1,5 @@
 // User
 {
-    "uid": 0,
     "username": "",
     "email": "",
     "password": "",
@@ -9,7 +8,6 @@
 
 // Authentication
 {
-    "uid": 0,
     "token": "",
     "last_login" : "DateObject",
 }
@@ -48,7 +46,4 @@
     "admin_ids": [0, ..., 0],
     "editor_ids" :[0, ..., 0],
     "whitelist_ids": [0, ..., 0],
-
-
-
 }

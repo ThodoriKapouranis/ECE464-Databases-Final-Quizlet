@@ -46,6 +46,7 @@ def getUsersByName( username:str ):
         {"username":1, "favorite_deck_ids":1, "decks_created": 1, "create_date":1}
     )
 
+'''
 def attemptLogin ( email: str, password:str ):   
     result = users.find_one( {"email":email, "password":password} )
     if result:
@@ -69,9 +70,7 @@ def creatAuth( id:ObjectId ):
         print("Could not add user to authentication table")
     else:
         pprint("LOGGED IN!")
-
-
-
+'''
 
 if (__name__ == "__main__"):
     # users.drop()
@@ -79,9 +78,3 @@ if (__name__ == "__main__"):
     createUser("h0@gmail.com", "Billy Bob", "123")
     attemptLogin("h0@gmail.com", "123")
     attemptLogin("h0@gmail.com", "124")
-
-
-    # for x in getUsersByName("Billy"):
-    #     pprint(x)
-
-
