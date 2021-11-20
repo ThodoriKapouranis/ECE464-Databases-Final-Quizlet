@@ -13,6 +13,11 @@ auths_db = db.auths
 
 # Checks if given token is valid, if it is valid, returns the user's uid
 def getUid ( token:str ) :
+    '''
+    Returns the userid of the user holding the authentication token.
+    - `token` : Authentication token
+
+    '''
     if (auth := auths_db.find_one({"token":token})):
         return auth["uid"]
     else: 
