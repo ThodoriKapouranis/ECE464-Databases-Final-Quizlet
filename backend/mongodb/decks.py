@@ -115,24 +115,15 @@ def userAuthorizationLevel( did:ObjectId, utoken:str ):
 	
 	If the deck is public, the default authorization for the nonpriveledged is 1, which is the same as the whitelist authorization for private decks.
 	'''
-	if not ( uid := auths.getUid(utoken) ):
-		return -1
-
-	if not ( deck := decks_db.find_one({"_id": did}) ):
-		return -1
-	
+	if not ( uid := auths.getUid(utoken) ): return -1
+	if not ( deck := decks_db.find_one({"_id": did}) ):	return -1
 	defaultAuthorization =  0 if deck["private"] else 1
 
-	if uid == deck["creator_id"]:
-		return 4
-	elif uid in deck["admin_ids"]:
-		return 3
-	elif uid in deck["editor_ids"]:
-		return 2
-	elif uid in deck["whitelist_ids"]:
-		return 1
-	else: 
-		return defaultAuthorization
+	if uid == deck["creator_id"]: 			return authLevel["owner"]
+	elif uid in deck["admin_ids"]: 			return authLevel["admin"]
+	elif uid in deck["editor_ids"]:			return authLevel["editor"]
+	elif uid in deck["whitelist_ids"]:	return authLevel["whitelisted"]
+	else: 															return defaultAuthorization
 
 
 # To do
