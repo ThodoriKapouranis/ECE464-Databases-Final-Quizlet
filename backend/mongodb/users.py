@@ -61,8 +61,7 @@ def creatAuth( id:ObjectId ):
                 "uid":id, 
                 "token":secrets.token_hex(), 
                 "login_time": datetime.now()}
-            } 
-    
+            }
     result = auths_db.update_one( query, newDoc, upsert=True )
     
     if not result:
