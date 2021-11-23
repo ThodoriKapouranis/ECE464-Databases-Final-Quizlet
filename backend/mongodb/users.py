@@ -19,9 +19,6 @@ def emailExists( email:str ):
     result = users_db.find_one( {"email":email}, {"email":1} )
     return True if result else False
 
-def create_collection():
-    return 0
-
 def createUserObject( email:str, username:str, password:str ):
     return({
         "username": username,
@@ -40,11 +37,17 @@ def createUser( email:str, username:str, password:str ):
     user = createUserObject(email, username, password)
     result = users_db.insert_one(user)
 
+    return result.inserted_id
+
 def getUsersByName( username:str ):
     return users_db.find( 
         {"username": {"$regex": username }},
-        {"username":1, "favorite_deck_ids":1, "decks_created": 1, "create_date":1}
+        {"password":0}
     )
+
+# Debugging only?
+def getUserByEmail( email:str ):
+    return users_db.find( {"email": email}, {"password":0} )
 
 def attemptLogin ( email: str, password:str ):   
     result = users_db.find_one( {"email":email, "password":password} )

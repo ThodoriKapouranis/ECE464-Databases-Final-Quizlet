@@ -19,7 +19,6 @@ cards_db = db.cards
 #########
 # Decks #
 #########
-
 def createDeckobject( deckName:str, tags:"list[str]", uid:ObjectId, private:bool ):
 	return {
 			"deck_name": deckName,
@@ -49,14 +48,14 @@ def createDeck ( deckName:str, tags:"list[str]", utoken:str, private:bool ):
 # Comments #
 ############
 
-def createCommentObject( uid:ObjectId, content:str ):
+def createCommentObject ( uid:ObjectId, content:str ):
 	return {
 		"uid": uid,
 		"content": content,
 		"date_created": datetime.now()
 	}
 
-def addComment( did:str, utoken:str, content:str ):
+def addComment ( did:str, utoken:str, content:str ):
 	
 	if not (uid := auths.getUid(utoken)):
 		print("Invalid user trying to comment!")
@@ -66,18 +65,21 @@ def addComment( did:str, utoken:str, content:str ):
 	
 	query = {"_id": did }
 	update = {"$push": {"comments": comment}}
-	deck = decks_db.find_one_and_update(query, update)
+	if not (decks_db.find_one_and_update(query, update) ):
+		print("Deck not found. Cannot comment.")
+		return -1
+
 
 ###########
 # Ratings #
 ###########
-def createRatingObject( uid:ObjectId, rating:int ):
+def createRatingObject ( uid:ObjectId, rating:int ):
 	return {
 		"uid": uid,
 		"rating": rating,
 	}
 
-def addRating( did:ObjectId, utoken:str, rating:int ):
+def addRating ( did:ObjectId, utoken:str, rating:int ):
 	if not (uid := auths.getUid(utoken)):
 		print("Invalid user trying to rate!")
 		return -1
@@ -102,32 +104,41 @@ def addRating( did:ObjectId, utoken:str, rating:int ):
 ######################
 # Deck Authorization #
 ######################
-authLevel = {
+AUTH_LEVEL = {
 	"owner": 4,
 	"admin": 3,
 	"editor": 2,
-	"whitelisted": 1,
+	"whitelist": 1,
+	}
+
+DECK_AUTH_FIELD = {
+	4: "creator_id",
+	3: "admin_ids",
+	2: "editor_ids",
+	1: "whitelist_ids",
+	0: None
 }
 
-def userAuthorizationLevel( did:ObjectId, utoken:str ):
+def userAuthorizationLevel ( did:ObjectId, uid:str ):
 	'''
 	Returns user's authorization level.
 	
 	If the deck is public, the default authorization for the nonpriveledged is 1, which is the same as the whitelist authorization for private decks.
 	'''
-	if not ( uid := auths.getUid(utoken) ): return -1
 	if not ( deck := decks_db.find_one({"_id": did}) ):	return -1
 	defaultAuthorization =  0 if deck["private"] else 1
 
-	if uid == deck["creator_id"]: 			return authLevel["owner"]
-	elif uid in deck["admin_ids"]: 			return authLevel["admin"]
-	elif uid in deck["editor_ids"]:			return authLevel["editor"]
-	elif uid in deck["whitelist_ids"]:	return authLevel["whitelisted"]
+	if uid == deck["creator_id"]: 			return AUTH_LEVEL["owner"]
+	elif uid in deck["admin_ids"]: 			return AUTH_LEVEL["admin"]
+	elif uid in deck["editor_ids"]:			return AUTH_LEVEL["editor"]
+	elif uid in deck["whitelist_ids"]:	return AUTH_LEVEL["whitelist"]
 	else: 															return defaultAuthorization
 
-
-# To do
-def authorizeUser( did:ObjectId, utoken:str, tuid:ObjectId):
+# TO DO : UNWANTED BEHAVIOR BUT I DONT REALLY CARE : 
+# If a deck is public the user can still be upgraded to be whitelisted for it
+# This doesn't really matter though as the whitelist_ids field isn't used for 
+# public decks
+def authorizeUser ( did:ObjectId, utoken:str, tuid:ObjectId, level:int ):
 	'''
 	:Parameters:
 	- `did`: Deck ID.
@@ -135,14 +146,42 @@ def authorizeUser( did:ObjectId, utoken:str, tuid:ObjectId):
 	- `tuid`: uid of target user recieving promotion.
 	
 	Makes the target user id (tuid) recieve authorization on specified deck id.\n
-	Only possible if the requesting userid has enough authLevel to promote people.
+	Only possible if the requesting userid has enough AUTH_LEVEL to promote people.
 
-	>>> ex: owner(4) can promote people to admin(3), editor(2), whitelisted(1)
-	>>> ex: admin(3) can promote people to editor(2), whitelisted(1)
+	>>> ex: owner(4) can promote people to admin(3), editor(2), whitelist(1)
+	>>> ex: admin(3) can promote people to editor(2), whitelist(1)
 	>>> ... etc
-	
 	'''
-	# Check utoken's 
+	if ( level > 3 or level < 0):
+		print("Invalid promotion level")
+		return -1
+
+	if not (uid := auths.getUid(utoken) ):
+		return -1
+
+	promoters_auth = userAuthorizationLevel(did, uid) 
+	targets_auth= userAuthorizationLevel(did, tuid)
+
+	if ( targets_auth >= promoters_auth ):
+		print(targets_auth, promoters_auth)
+		print("User has no authority over target user")
+		return -1
+	
+	if (promoters_auth > level):
+		# User will be pulled from old field once they are pushed to the new.
+		new_field, old_field  = DECK_AUTH_FIELD[level], DECK_AUTH_FIELD[targets_auth]
+		print("new_field:",new_field, "  old_field:", old_field)
+
+		query = {"_id": did}
+
+		if (new_field != None):
+			update_push = {"$push": {new_field: tuid} }
+			decks_db.update_one(query, update_push)
+
+		if (old_field != None):
+			remove_pull = {"$pull": {old_field: tuid}}
+			decks_db.update_one(query,remove_pull)
+
 	return 0
 
 
@@ -150,42 +189,36 @@ if (__name__  == "__main__"):
 	users_db.drop()
 	decks_db.drop()
 	
-	users.createUser("h0@gmail.com", "Billy Bob", "123")
-	users.createUser("h1@gmail.com", "Jean Lam", "123")
+	uid1 = users.createUser("h0@gmail.com", "Billy Bob", "123")
+	uid2 = users.createUser("h1@gmail.com", "Jean Lam", "123")
 
 	users.attemptLogin("h0@gmail.com", "123")
 	users.attemptLogin("h1@gmail.com", "123")
-	utoken = auths.getToken("h0@gmail.com")
+	utoken1 = auths.getToken("h0@gmail.com")
 	utoken2 = auths.getToken("h1@gmail.com")
 
 	
-	did = createDeck( "CULTURE STUDY", ["Culture", "Manga", "Anime", "UWU"], utoken, False )
+	did = createDeck( "CULTURE STUDY", ["Culture", "Manga", "Anime", "UWU"], utoken1, False )
 
-	did2 = createDeck( "My private deck >:(", ["Private", "Study", "Pogchamps"], utoken, True )
+	did2 = createDeck( "My private deck >:(", ["Private", "Study", "Pogchamps"], utoken1, True )
+
 	
-	addComment(did, utoken, "This deck sucks! Terrible!")
-	addComment(did, utoken, "Nevermind this deck is ok! Just ok!")
-	addComment(did, utoken2, "Great deck but not as good as Haskell")
-	addComment(did, utoken2, "Just ok")
-	addComment(did, "invalid utoken", "Just ok")
-
-	addRating(did, utoken, 5)
-	addRating(did, utoken2, 4)
-	addRating(did, utoken, 3)
-	addRating(did, utoken, 2)
-	addRating(did, utoken, 1)
-	addRating(did, utoken2, 5)
-
-	print(userAuthorizationLevel(did, utoken), 
-				userAuthorizationLevel(did, utoken2),
-				"\n",
-				userAuthorizationLevel(did2, utoken),
-				userAuthorizationLevel(did2, utoken2),
-	)
+	authorizeUser(did, utoken1, uid2, 3)
+	authorizeUser(did, utoken1, uid2, 2)
+	authorizeUser(did, utoken1, uid2, 1)
+	authorizeUser(did, utoken1, uid2, 0)
 
 
 
+	# addComment(did, utoken, "This deck sucks! Terrible!")
+	# addComment(did, utoken, "Nevermind this deck is ok! Just ok!")
+	# addComment(did, utoken2, "Great deck but not as good as Haskell")
+	# addComment(did, utoken2, "Just ok")
+	# addComment(did, "invalid utoken", "Just ok")
 
-
-
-
+	# addRating(did, utoken, 5)
+	# addRating(did, utoken2, 4)
+	# addRating(did, utoken, 3)
+	# addRating(did, utoken, 2)
+	# addRating(did, utoken, 1)
+	# addRating(did, utoken2, 5)
