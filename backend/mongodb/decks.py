@@ -92,7 +92,6 @@ def addComment ( did:str, utoken:str, content:str ):
 		print("Deck not found. Cannot comment.")
 		return -1
 
-
 ###########
 # Ratings #
 ###########
@@ -139,8 +138,8 @@ DECK_AUTH_FIELD = {
 	3: "admin_ids",
 	2: "editor_ids",
 	1: "whitelist_ids",
-	0: None
-}
+	0: None,
+	}
 
 def userAuthorizationLevel ( did:ObjectId, uid:str ):
 	'''
@@ -151,6 +150,7 @@ def userAuthorizationLevel ( did:ObjectId, uid:str ):
 	if not ( deck := decks_db.find_one({"_id": did}) ):	return -1
 	defaultAuthorization =  0 if deck["private"] else 1
 
+	# pprint(deck)
 	if uid == deck["creator_id"]: 			return AUTH_LEVEL["owner"]
 	elif uid in deck["admin_ids"]: 			return AUTH_LEVEL["admin"]
 	elif uid in deck["editor_ids"]:			return AUTH_LEVEL["editor"]
@@ -158,7 +158,7 @@ def userAuthorizationLevel ( did:ObjectId, uid:str ):
 	else: 															return defaultAuthorization
 
 # TO DO : UNWANTED BEHAVIOR BUT I DONT REALLY CARE : 
-# If a deck is public the user can still be upgraded to be whitelisted for it
+# If a deck is public the user can still be upgraded to be whitelisted for it.
 # This doesn't really matter though as the whitelist_ids field isn't used for 
 # public decks
 def authorizeUser ( did:ObjectId, utoken:str, tuid:ObjectId, level:int ):

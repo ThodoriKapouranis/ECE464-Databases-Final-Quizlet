@@ -4,6 +4,7 @@ from datetime import datetime
 from mongoCredentials import MONGO_URI
 from pprint import pprint
 import secrets
+import decks
 
 client = pymongo.MongoClient(MONGO_URI)
 
@@ -21,8 +22,19 @@ def getUid ( token:str ) :
     if (auth := auths_db.find_one({"token":token})):
         return auth["uid"]
     else: 
-        return None
-        
+        return None        
+
+def checkUserExist ( utoken:str ):
+    if not ( uid := getUid(utoken) ):
+        print("User does not exist")
+        return -1
+    else:
+        return uid
+
+def authCheck(utoken:str, did:ObjectId):
+    if ( uid := checkUserExist(utoken) == -1) : return -1
+    if ( level := decks.userAuthorizationLevel(did, uid) < 1) : return -1
+    else: return (uid, level)
 
 # FOR DEBUGGING ONLY
 def getToken( email:str ):
