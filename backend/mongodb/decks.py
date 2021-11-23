@@ -1,8 +1,9 @@
+from struct import error
 from bson.objectid import ObjectId
 import pymongo
 from datetime import datetime
-
-from pymongo.message import update
+from pymongo.collation import Collation, CollationStrength
+from pymongo.message import query, update
 from mongoCredentials import MONGO_URI
 from pprint import pprint
 import secrets
@@ -19,9 +20,9 @@ cards_db = db.cards
 #########
 # Decks #
 #########
-def createDeckobject( deckName:str, tags:"list[str]", uid:ObjectId, private:bool ):
+def createDeckobject( name:str, tags:"list[str]", uid:ObjectId, private:bool ):
 	return {
-			"deck_name": deckName,
+			"name": name,
 			"tags" : tags,
 			"date_created": datetime.now(),
 			"cards": [],
@@ -34,16 +35,38 @@ def createDeckobject( deckName:str, tags:"list[str]", uid:ObjectId, private:bool
 			"whitelist_ids": [],
 	}
 
-def createDeck ( deckName:str, tags:"list[str]", utoken:str, private:bool ):
+def createDeck ( name:str, tags:"list[str]", utoken:str, private:bool ):
 	
 	if not (uid := auths.getUid(utoken)) :
 		print("Invalid user!")
 		return -1
 	
-	deck = createDeckobject(deckName, tags, uid, private)
+	deck = createDeckobject(name, tags, uid, private)
 	result = decks_db.insert_one(deck)
 	return result.inserted_id
+
+def searchDecks (*args, **kwargs):
+	'''
+	parameters:
+	- `name` (OPTIONAL) : Name of deck to query on
+	- `tags` (OPTIONAL) : List of tags to query for
 	
+	At least one argument must be given for a query to run
+	'''
+	if len(kwargs) == 0:
+		print("ERROR : No arguments given")
+		return -1
+
+	name, tags = kwargs.get("name"), kwargs.get("tags")
+
+	# Build the query given available information
+	query = {}
+	if (name != None): query["name"] = {"$regex": name}
+	if (tags != None): query["tags"] = {"$all": tags}
+	
+	projection = {"comments": 0, "cards":0 }
+	return decks_db.find(query, projection)
+
 ############
 # Comments #
 ############
@@ -188,7 +211,9 @@ def authorizeUser ( did:ObjectId, utoken:str, tuid:ObjectId, level:int ):
 if (__name__  == "__main__"):
 	users_db.drop()
 	decks_db.drop()
-	
+	# Creates an index for the name of decks. 
+	# CollationStrength.SECONDARY means that this index should be case-insensitive, useful for searching.
+	decks_db.create_index("name", collation=Collation(locale="en_US", strength= CollationStrength.SECONDARY) )
 	uid1 = users.createUser("h0@gmail.com", "Billy Bob", "123")
 	uid2 = users.createUser("h1@gmail.com", "Jean Lam", "123")
 
@@ -203,22 +228,24 @@ if (__name__  == "__main__"):
 	did2 = createDeck( "My private deck >:(", ["Private", "Study", "Pogchamps"], utoken1, True )
 
 	
-	authorizeUser(did, utoken1, uid2, 3)
-	authorizeUser(did, utoken1, uid2, 2)
-	authorizeUser(did, utoken1, uid2, 1)
-	authorizeUser(did, utoken1, uid2, 0)
+	# authorizeUser(did, utoken1, uid2, 3)
+	# authorizeUser(did, utoken1, uid2, 2)
+	# authorizeUser(did, utoken1, uid2, 1)
+	# authorizeUser(did, utoken1, uid2, 0)
 
+	searchResult = searchDecks(name = "CULT", tags=["Culture", "UWU"] )
+	for i in searchResult:
+		pprint(i)
 
-
-	# addComment(did, utoken, "This deck sucks! Terrible!")
-	# addComment(did, utoken, "Nevermind this deck is ok! Just ok!")
+	# addComment(did, utoken1, "This deck sucks! Terrible!")
+	# addComment(did, utoken1, "Nevermind this deck is ok! Just ok!")
 	# addComment(did, utoken2, "Great deck but not as good as Haskell")
 	# addComment(did, utoken2, "Just ok")
 	# addComment(did, "invalid utoken", "Just ok")
 
-	# addRating(did, utoken, 5)
+	# addRating(did, utoken1, 5)
 	# addRating(did, utoken2, 4)
-	# addRating(did, utoken, 3)
-	# addRating(did, utoken, 2)
-	# addRating(did, utoken, 1)
+	# addRating(did, utoken1, 3)
+	# addRating(did, utoken1, 2)
+	# addRating(did, utoken1, 1)
 	# addRating(did, utoken2, 5)
