@@ -19,14 +19,13 @@ users_db = db.users
 decks_db = db.decks
 cards_db = db.cards
 
-
-def createCardObject( front:'list[dict]', back:'list[dict]' ):
+def createCardObject ( front:'list[dict]', back:'list[dict]' ):
   return {
     "front": front,
     "back": back,
   }
 
-def createCard( did:ObjectId, utoken:str, front:'list[dict]', back:'list[dict]'):
+def createCard ( did:ObjectId, utoken:str, front:'list[dict]', back:'list[dict]'):
   '''
   Creates a card object and appends it to the decks "cards" field.
   '''
@@ -42,7 +41,7 @@ def createCard( did:ObjectId, utoken:str, front:'list[dict]', back:'list[dict]')
   return insertResult, decks_db.update_one( deckQuery, deckUpdate) 
 
 # Create a copy of a card (not a reference, but make a new card)
-def createCardCopy( cdid:ObjectId, tdid:ObjectId, utoken:str,  cid:ObjectId, *args,  **kwargs):
+def createCardCopy ( cdid:ObjectId, tdid:ObjectId, utoken:str,  cid:ObjectId, *args,  **kwargs):
   '''
   Creates a copy of an existing card. 
 
@@ -77,8 +76,7 @@ def createCardCopy( cdid:ObjectId, tdid:ObjectId, utoken:str,  cid:ObjectId, *ar
     deckUpdate = {"$push": {"cards": insertResult.inserted_id}}
     return decks_db.update_one( deckQuery, deckUpdate )
 
-
-def getDecksCards( did:ObjectId, utoken:str ):
+def getDecksCards ( did:ObjectId, utoken:str ):
   '''
   Returns deck's cards if the user is priviledged.
   '''
@@ -97,7 +95,6 @@ def getDecksCards( did:ObjectId, utoken:str ):
       cardIds.append(j)
 
   return cards_db.find( {"_id": {'$in' :cardIds} } )
-
 
 if (__name__  == "__main__"):
   users_db.drop()
