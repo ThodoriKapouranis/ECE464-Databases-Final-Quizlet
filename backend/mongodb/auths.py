@@ -25,8 +25,8 @@ def getUid ( token:str ) :
         return None        
 
 def checkUserExist ( utoken:str ):
-    if (user := auths_db.find_one({"token": utoken}, {"name": 1})):
-        return user["username"]
+    if (user := auths_db.find_one({"token": utoken}, {"_id":1})):
+        return True
     else:
         return None
 
@@ -34,6 +34,11 @@ def authCheck(utoken:str, did:ObjectId):
     if not ( uid := getUid(utoken) ) : return -1
     if ( level := decks.userAuthorizationLevel(did, uid) < 1) : return -1
     else: return (uid, level)
+
+def deleteToken(utoken:str):
+    if (auths_db.delete_one({"token": utoken}).deleted_count==1):
+        return True
+    else: return False
 
 # FOR DEBUGGING ONLY
 def getToken( email:str ):

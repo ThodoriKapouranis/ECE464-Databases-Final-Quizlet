@@ -14,3 +14,25 @@
   color: #94e8b4;
   text-shadow: 0 0 10px #3B322C;
 }
+
+.welcome{
+  font-weight: 600;
+  font-size: 30px;
+  color: #94e8b4;
+  cursor: pointer;
+}
+.welcome:hover{
+  color: #94e8b4;
+  text-shadow: 0 0 10px #3B322C;
+}
+
+.logout{
+  font-weight: 600;
+  font-size: 20px;
+  color: #F47174;
+  cursor: pointer;
+}
+
+.logout:hover{
+  text-shadow: 0 0 10px #3B322C;
+}

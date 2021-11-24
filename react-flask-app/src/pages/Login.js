@@ -28,7 +28,11 @@ export default function Login() {
 
     const body = loginUser(email, password)
     body.then( (res) => {
-      if (res['status']===200){ setSuccess(true); setFailure(false); }
+      if (res['status']===200){ 
+        setSuccess(true); 
+        setFailure(false); 
+        window.location.href="/";
+      }
       else {setSuccess(false); setFailure(true); setErrorCode( errors[1] )}
     })
 

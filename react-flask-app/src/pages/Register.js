@@ -31,7 +31,10 @@ export default function Register() {
 
     const body = registerUser(email, username, password)
     body.then( (res) => {
-      if (res['status']===200) setSuccess(true)
+      if (res['status']===200) {
+        setSuccess(true)
+        window.location.href="/login"
+      } 
       else {setSuccess(false); setFailure(true); setErrorCode( errors[1] )}
     })
   }

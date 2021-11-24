@@ -23,32 +23,54 @@ async function loginUser(email, password ){
     body: JSON.stringify({email: email, password:password})
   });
   const content = await rawResponse.json();
+  console.log(content)
   if (content["status"] === 200) {
     localStorage.setItem("token", content["token"])
-    localStorage.setItem("validLoginDate", Date.now )
-    localStorage.setItem("user", content["username"])
-
+    localStorage.setItem("validLoginDate", Date.now() )
+    localStorage.setItem("username", content["username"])
   }
   return content
 }
 
-// async function checkToken(){
-//   let token = localStorage.getItem("token")
+async function validToken(){
+  let token = localStorage.getItem("token")
 
-//   const rawResponse = await fetch("/checkToken", {
-//     method: 'POST',
-//     headers: {
-//       'Accept': 'application/json',
-//       'Content-Type': 'application/json'
-//     },
-//     body: JSON.stringify({token: token})
-//   });
-//   const content = await rawResponse.json();
+  const rawResponse = await fetch("/checkToken", {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({token: token})
+  });
+  const content = await rawResponse.json();
   
-//   if (content['status'] === 200){
+  console.log(content)
+  if (content['status'] === 200){
+    localStorage.setItem("validLoginDate", Date.now() )
+    return true
+  } else {
+    localStorage.removeItem("token")
+    return false
+  }
 
-//   }
-//   return content
+}
 
-// }
-export {registerUser, loginUser}
+async function logoutUser(){
+  let token = localStorage.getItem("token")
+  localStorage.removeItem("token")
+
+  const rawResponse = await fetch("/logout", {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({token: token})
+  });
+
+  const content = await rawResponse.json();
+  console.log(content)
+  
+}
+export {registerUser, loginUser, validToken, logoutUser}

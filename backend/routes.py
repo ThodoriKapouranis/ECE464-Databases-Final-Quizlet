@@ -30,12 +30,25 @@ def login():
   else:
     return {"status":400 }
 
-# FE sends token to BE to check if its a valid token
-# Will called every time by the header 
+# Logout, deletes token from db
+@app.route("/logout", methods=["POST"])
+def logout():
+  data = request.json
+  res = auths.deleteToken( data["token"] )
+  return {"status":200} if res else {"status":400}
+
 @app.route("/checkToken", methods=["POST"])
 def checkToken():
+  '''
+  This is called when the header is rerendered and the token hasnt been
+  checked for at least {2} minutes. Checks to see if token is still valid.
+  '''
   data = request.json
-  res = auths
+  res = auths.checkUserExist( data["token"] )
+  if ( res != None):
+    return {"status":200}
+  else:
+    return {"status":400}
 
 
 # Get user by name
