@@ -1,0 +1,32 @@
+.text-form{
+  border-radius: 15px;
+  height: 6vh;
+  width: 16vw;
+  padding-left: 40px;
+  padding-right: 40px;
+  font-size: 22px;
+}
+
+.button-form{
+  border-radius: 20px;
+  width: 16px;
+  height:6vh;
+  font-size: 22px;
+  background-color: #72BDA3;
+  border: none;
+}
+
+.button-form:hover{
+  background-color: #94e8b4;
+  box-shadow: 0 0 2px #94e8b4;
+}
+
+.form-text{
+  text-decoration: none;
+  border: none;
+  color: #72BDA3;
+  font-size: calc(20px + 2vmin);
+  font-weight: 600;
+  text-shadow: 0 0 10px #3B322C;
+  text-shadow: 0 0 10px #3B322C;
+}

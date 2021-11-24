@@ -2,12 +2,17 @@
 import pymongo
 # from  mongodb import auths, decks, cards, users
 import time
-from flask import Flask
+from flask import Flask, request
+from pprint import pprint
 
 app = Flask(__name__)
 
-@app.route("/api/time")
+@app.route("/time")
 def getCurrentTime():
     return {'time': time.time()}
 
+@app.route("/register", methods=['POST'])
+def registerUse():
+    data = request.json
+    return {"response": 300 }
 

@@ -1,7 +1,12 @@
 import React, {useState, useEffect} from 'react';
 import logo from './logo.svg';
 import './App.css';
-import {ChakraProvider} from "@chakra-ui/react";
+import {ChakraProvider, Switch} from "@chakra-ui/react";
+import Header from './components/header';
+import { BrowserRouter, Router, Routes, Route } from "react-router-dom";
+import Login from './pages/Login';
+
+
 
 function App() {
 
@@ -15,11 +20,17 @@ function App() {
   return (
     <ChakraProvider> 
 
-    <div className="App">
-      <header className="App-header">
-      </header>
-    </div>
-    
+      <div className="App">
+
+        <header className="App-header">
+          <Header> </Header>
+        </header>
+
+      <Routes>
+        <Route exact path="/login" component={<Login/>} />
+      </Routes>
+
+      </div>
     </ChakraProvider>
   );
 }

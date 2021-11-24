@@ -1,0 +1,16 @@
+.tile{
+  margin-right: 60px;
+}
+
+.login{
+  text-decoration: none;
+  color: #72BDA3;
+  font-size: calc(10px + 2vmin);
+  font-weight: 600;
+  padding-right: 20px;
+}
+
+.login:hover{
+  color: #94e8b4;
+  text-shadow: 0 0 10px #3B322C;
+}
