@@ -18,7 +18,7 @@ export default function Header() {
       
       // If it has been 2 minutes since last login token check,
       // do it again. Otherwise, use the stored information
-      if (timeDiffSecs >= 1){
+      if (timeDiffSecs >= 120){
         validToken(token).then((bool) => setLoggedIn(bool))
       } 
       // Else, assume the user is still logged in (improved performance)
