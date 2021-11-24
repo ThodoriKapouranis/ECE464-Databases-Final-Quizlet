@@ -16,7 +16,7 @@ cards_db = db.cards
 # "users_db" COLLECTION functions
 
 def emailExists( email:str ):
-    result = users_db.find_one( {"email":email}, {"email":1} )
+    result = users_db.find_one( {"email":email}, {"_id": 1} )
     return True if result else False
 
 def createUserObject( email:str, username:str, password:str ):

@@ -19,7 +19,7 @@ def getUid ( token:str ) :
     - `token` : Authentication token
 
     '''
-    if (auth := auths_db.find_one({"token":token})):
+    if (auth := auths_db.find_one({"token": token}, {"uid": 1})):
         return auth["uid"]
     else: 
         return None        
@@ -47,8 +47,7 @@ def getToken( email:str ):
     return auth["token"]
 
 def attemptLogin ( email: str, password:str ):   
-    result = users_db.find_one( {"email":email, "password":password} )
-    if result:
+    if ( result := users_db.find_one( {"email":email, "password":password}, {"_id": 1} ) ):
         auth = creatAuth(result["_id"])
     else:
         print("Wrong login, try again!")
@@ -68,7 +67,7 @@ def creatAuth ( id:ObjectId ) :
     if not result:
         print("Could not add user to authentication table")
     else:
-        pprint("LOGGED IN!")
+        print("LOGGED IN!")
 
 
 if (__name__ == "__main__"):

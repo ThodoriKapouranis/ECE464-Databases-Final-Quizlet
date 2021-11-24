@@ -1,4 +1,3 @@
-from struct import error
 from bson.objectid import ObjectId
 import pymongo
 import time
@@ -97,6 +96,7 @@ def getDecksCards ( did:ObjectId, utoken:str ):
   return cards_db.find( {"_id": {'$in' :cardIds} } )
 
 if (__name__  == "__main__"):
+
   users_db.drop()
   decks_db.drop()
   cards_db.drop()

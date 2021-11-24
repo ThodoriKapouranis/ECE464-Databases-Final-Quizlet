@@ -147,7 +147,12 @@ def userAuthorizationLevel ( did:ObjectId, uid:str ):
 	
 	If the deck is public, the default authorization for the nonpriveledged is 1, which is the same as the whitelist authorization for private decks.
 	'''
-	if not ( deck := decks_db.find_one({"_id": did}) ):	return -1
+	# if not ( deck := decks_db.find_one({"_id": did}) ):	return -1
+	# Testing if this works faster
+	deckQuery = {"_id": did}
+	deckProjection = {"creator_id":1, "admin_ids":1, "editor_ids":1, "whitelist_ids":1, "private":1 }
+	if not ( deck := decks_db.find_one(deckQuery, deckProjection)):	return -1
+
 	defaultAuthorization =  0 if deck["private"] else 1
 
 	# pprint(deck)
