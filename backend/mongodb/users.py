@@ -1,13 +1,12 @@
 from bson.objectid import ObjectId
-import pymongo
 from datetime import datetime
-from mongoCredentials import MONGO_URI
 from pprint import pprint
 import secrets
 
-client = pymongo.MongoClient(MONGO_URI)
+from flask_pymongo import PyMongo
+from main import db
+import mongodb.auths as auths
 
-db = client.Quizlet
 users_db = db.users
 auths_db = db.auths
 decks_db = db.decks
@@ -52,25 +51,11 @@ def getUserByEmail( email:str ):
 def attemptLogin ( email: str, password:str ):   
     result = users_db.find_one( {"email":email, "password":password} )
     if result:
-        auth = creatAuth(result["_id"])
+        token = auths.creatAuth(result["_id"])
+        return (result["username"], token)
     else:
-        print("Wrong login, try again!")
-        
-
-def creatAuth( id:ObjectId ):
-    # Check if authentication already exists for the user
-    query = { "uid" : id }
-    newDoc = {"$set" :  {
-                "uid":id, 
-                "token":secrets.token_hex(), 
-                "login_time": datetime.now()}
-            }
-    result = auths_db.update_one( query, newDoc, upsert=True )
-    
-    if not result:
-        print("Could not add user to authentication table")
-    else:
-        pprint("LOGGED IN!")
+        print("User does not exist")
+        return None
 
 if (__name__ == "__main__"):
     # users_db.drop()

@@ -1,25 +1,23 @@
-from struct import error
 from bson.objectid import ObjectId
-import pymongo
 from datetime import datetime
 from pymongo.collation import Collation, CollationStrength
-from pymongo.message import query, update
-from mongoCredentials import MONGO_URI
 from pprint import pprint
 import secrets
-import auths
-import users
+import mongodb.auths as auths
+import mongodb.users as users
 
-client = pymongo.MongoClient(MONGO_URI)
+from flask_pymongo import PyMongo
+from main import db
 
-db = client.Quizlet
 users_db = db.users
+auths_db = db.auths
 decks_db = db.decks
 cards_db = db.cards
 
-#########
+########
 # Decks #
-#########
+########
+
 def createDeckobject( name:str, tags:"list[str]", uid:ObjectId, private:bool ):
 	return {
 			"name": name,

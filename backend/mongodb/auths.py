@@ -1,16 +1,16 @@
 from bson.objectid import ObjectId
-import pymongo
 from datetime import datetime
-from mongoCredentials import MONGO_URI
 from pprint import pprint
 import secrets
-import decks
+import mongodb.decks as decks
 
-client = pymongo.MongoClient(MONGO_URI)
+from flask_pymongo import PyMongo
+from main import db
 
-db = client.Quizlet
 users_db = db.users
 auths_db = db.auths
+decks_db = db.decks
+cards_db = db.cards
 
 # Checks if given token is valid, if it is valid, returns the user's uid
 def getUid ( token:str ) :
@@ -25,14 +25,13 @@ def getUid ( token:str ) :
         return None        
 
 def checkUserExist ( utoken:str ):
-    if not ( uid := getUid(utoken) ):
-        print("User does not exist")
-        return -1
+    if (user := auths_db.find_one({"token": utoken}, {"name": 1})):
+        return user["username"]
     else:
-        return uid
+        return None
 
 def authCheck(utoken:str, did:ObjectId):
-    if ( uid := checkUserExist(utoken) == -1) : return -1
+    if not ( uid := getUid(utoken) ) : return -1
     if ( level := decks.userAuthorizationLevel(did, uid) < 1) : return -1
     else: return (uid, level)
 
@@ -55,10 +54,11 @@ def attemptLogin ( email: str, password:str ):
 
 def creatAuth ( id:ObjectId ) :
     # Check if authentication already exists for the user
+    token = secrets.token_hex()
     query = { "uid" : id }
     newDoc = {"$set" :  {
                 "uid":id, 
-                "token":secrets.token_hex(), 
+                "token": token, 
                 "login_time": datetime.now()}
             } 
     
@@ -66,11 +66,13 @@ def creatAuth ( id:ObjectId ) :
     
     if not result:
         print("Could not add user to authentication table")
+        return None
     else:
-        print("LOGGED IN!")
+        print("User logged in")
+        return token
 
 
-if (__name__ == "__main__"):
-    #auths_db.drop()
-    attemptLogin("h0@gmail.com", "123")
-    attemptLogin("h0@gmail.com", "124")
+# if (__name__ == "__main__"):
+#     #auths_db.drop()
+#     attemptLogin("h0@gmail.com", "123")
+#     attemptLogin("h0@gmail.com", "124")

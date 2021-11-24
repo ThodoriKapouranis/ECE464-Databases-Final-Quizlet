@@ -1,20 +1,18 @@
 from bson.objectid import ObjectId
-import pymongo
 import time
 from pymongo.collation import Collation, CollationStrength
 from pymongo.message import query, update
-from mongoCredentials import MONGO_URI
 from pprint import pprint
 import secrets
-import auths
-import users
-import decks
+import mongodb.auths as auths
+import mongodb.users as users
+import mongodb.decks as decks
 
-client = pymongo.MongoClient(MONGO_URI)
+from flask_pymongo import PyMongo
+from main import db
 
-db = client.Quizlet
-auths_db = db.auths
 users_db = db.users
+auths_db = db.auths
 decks_db = db.decks
 cards_db = db.cards
 
@@ -29,7 +27,7 @@ def createCard ( did:ObjectId, utoken:str, front:'list[dict]', back:'list[dict]'
   Creates a card object and appends it to the decks "cards" field.
   '''
   # Check valid user, valid priveledges
-  if ( (uid := auths.checkUserExist(utoken)) == -1) : return -1
+  if  not ( uid := auths.getUid(utoken) ) : return -1
   if ( (level := decks.userAuthorizationLevel(did, uid)) < 1) : return -1
   # Insert card into the cards collection
   insertResult = cards_db.insert_one(createCardObject(front, back))
@@ -51,7 +49,7 @@ def createCardCopy ( cdid:ObjectId, tdid:ObjectId, utoken:str,  cid:ObjectId, *a
   - `cid` - Card to copy from
   - `reference` (optional) - default False. If True, creates reference.
   '''
-  if ( (uid := auths.checkUserExist(utoken)) == -1) : 
+  if not ( uid := auths.getUid(utoken) ): 
     print("user dne") 
     return -1
 
@@ -80,7 +78,7 @@ def getDecksCards ( did:ObjectId, utoken:str ):
   Returns deck's cards if the user is priviledged.
   '''
 
-  if ( (uid := auths.checkUserExist(utoken)) == -1) : return -1
+  if not ( uid := auths.getUid(utoken) ): return -1
   if ( userAuth := decks.userAuthorizationLevel(did, uid) < 1 ):
     print("User does not have access")
     return -1

@@ -1,4 +1,4 @@
-import React from 'react'
+import {React, useEffect} from 'react'
 import { Box } from "@chakra-ui/react"
 import { Flex, HStack } from "@chakra-ui/layout"
 import { Input } from "@chakra-ui/input";
@@ -7,6 +7,13 @@ import './header.css'
 
 export default function Header() {
   
+  useEffect(() => {
+    let token = localStorage.getItem("token")
+    if (token != null){
+      alert(token)
+    }
+  }, [])
+
   return (
     <HStack  w="100%" h="8vh" margin={0} backgroundColor="#4e6151"> 
 
