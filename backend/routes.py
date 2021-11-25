@@ -76,3 +76,19 @@ def createDeck():
     return {"status":200, "did": str(did)}
   else:
     return {"status":400}
+
+# # Single Deck view (Deck, comments, ratings)
+# # url: did  | json: token
+# @app.route("/deck/<did>", methods=["GET"])
+# def getDeck():
+
+# # Add comment (visible on single deck page)
+# url: did | json: comment, token
+# @app.route("/deck/<did>/comment", methods=["POST"])
+# def addDeckComment():
+
+# # Add rating (visible on single deck page)
+# # url: did | json: comment, token
+# @app.route("/deck/<did>/rate", methods=["POST"])
+# def addDeckRating():
+
