@@ -32,12 +32,13 @@ export default function Header() {
       window.location.href='/'
     })
   }
-
   const topRight = () => <>
     {loggedIn ? 
       <HStack spacing="40px" w="100%" justifyContent="right">
         <Text className="welcome"> 
-          {localStorage.getItem("username")}
+          <Link to={`/user/${localStorage.getItem("username")}`} > 
+            {localStorage.getItem("username")} 
+          </Link>
         </Text>
         <Text className="logout" onClick={logout}> 
           Logout 

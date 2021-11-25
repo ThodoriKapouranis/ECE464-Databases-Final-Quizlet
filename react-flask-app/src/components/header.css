@@ -1,6 +1,13 @@
 a{
+  color: inherit;
   text-decoration: none;
 }
+
+a, a:visited, a:active {
+  color: inherit;
+  text-decoration: none;
+}
+
 
 .tile{
   margin-right: 60px;

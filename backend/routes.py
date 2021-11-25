@@ -77,6 +77,17 @@ def createDeck():
   else:
     return {"status":400}
 
+@app.route("/user/<username>/decks", methods=["GET"])
+def requestUserDecks(username):
+  res = decks.getUsersDecks(username)
+  if (res != None):
+    dids_created = [str(x) for x in res["created_decks"]]
+    dids_favorited = [str(x) for x in res["favorite_decks"]]
+    return {"status" : 200, 
+            }
+  else:
+    return {"status":400}
+
 # # Single Deck view (Deck, comments, ratings)
 # # url: did  | json: token
 # @app.route("/deck/<did>", methods=["GET"])

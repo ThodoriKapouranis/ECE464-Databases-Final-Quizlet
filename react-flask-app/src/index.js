@@ -10,6 +10,7 @@ import Register from './pages/Register';
 import Home from './pages/Home';
 import DecksView from './pages/decks/DecksView';
 import DeckCreate from './pages/decks/DeckCreate';
+import Userpage from './pages/users/Userpage';
 
 ReactDOM.render(
   <React.StrictMode>
@@ -20,6 +21,7 @@ ReactDOM.render(
         <Route path="/register" element={<Register/>} />
         <Route path="/decks" element={<DecksView/>}/>
         <Route path="/decks/create" element={<DeckCreate/>} />
+        <Route path="/user/:username" element={<Userpage/>} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>,

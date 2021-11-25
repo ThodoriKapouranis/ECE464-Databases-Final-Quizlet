@@ -89,4 +89,10 @@ async function createDeck(name, tags, privacy){
   console.log(content)
   return content
 }
-export {registerUser, loginUser, validToken, logoutUser, createDeck}
+
+async function getUserDecks(username){
+  const rawResponse = await fetch(`/user/${username}/decks`);
+  const content = await rawResponse
+  console.log(content)
+}
+export {registerUser, loginUser, validToken, logoutUser, createDeck, getUserDecks}

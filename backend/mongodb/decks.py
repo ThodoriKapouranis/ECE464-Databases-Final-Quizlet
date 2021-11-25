@@ -43,7 +43,7 @@ def createDeck ( name:str, tags:"list[str]", utoken:str, private:bool ):
 	result = decks_db.insert_one(deck)
 
 	userQuery = {"_id": uid}
-	userUpdate = {"$push": {"decks_created": result.inserted_id} }
+	userUpdate = {"$push": {"created_decks": result.inserted_id} }
 	resultUser = users_db.update_one(userQuery, userUpdate)
 	pprint(resultUser)
 	return result.inserted_id
@@ -70,7 +70,14 @@ def searchDecks (*args, **kwargs):
 	projection = {"comments": 0, "cards":0 }
 	return decks_db.find(query, projection)
 
-# def getUsersDecks()
+def getUsersDecks( username:str ):
+	query = {"username": username}
+	projection = {"_id": 0, "favorite_decks":1, "created_decks":1 }
+
+	user = users_db.find_one(query, projection)
+	return user
+
+
 ############
 # Comments #
 ############

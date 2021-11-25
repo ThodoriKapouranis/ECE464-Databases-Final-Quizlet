@@ -21,16 +21,13 @@ def createUserObject( email:str, username:str, password:str ):
         "email": email,
         "password": password,
         "create_date": datetime.now(),
-        "favorite_deck_ids": [],
-        "decks_created": []
+        "favorite_decks": [],
+        "created_decks": []
     })
 
 def createUser( email:str, username:str, password:str ):
     # Do not need to check if email exists
     # Since the index will take care of that.
-
-    # Check if username and password are valid?
-
     user = createUserObject(email, username, password)
     try:
         result = users_db.insert_one(user)
