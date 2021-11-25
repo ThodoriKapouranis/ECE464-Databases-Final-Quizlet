@@ -13,7 +13,7 @@ export default function Register() {
   const [failure, setFailure] = React.useState(false)
   const [errorCode, setErrorCode] = React.useState(false)
 
-  const errors = {0: "Missing fields", 1: "Email is already registered"}
+  const errors = {0: "Missing fields", 1: "Email/Username is already registered"}
   
   const toggleShow = () => setShow(!show)
   

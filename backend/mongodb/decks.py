@@ -70,6 +70,7 @@ def searchDecks (*args, **kwargs):
 	projection = {"comments": 0, "cards":0 }
 	return decks_db.find(query, projection)
 
+# def getUsersDecks()
 ############
 # Comments #
 ############

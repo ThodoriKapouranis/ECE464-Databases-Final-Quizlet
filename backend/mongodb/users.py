@@ -1,3 +1,5 @@
+import pymongo
+from enum import unique
 from bson.objectid import ObjectId
 from datetime import datetime
 from pprint import pprint
@@ -13,11 +15,6 @@ decks_db = db.decks
 cards_db = db.cards
 
 # "users_db" COLLECTION functions
-
-def emailExists( email:str ):
-    result = users_db.find_one( {"email":email}, {"_id": 1} )
-    return True if result else False
-
 def createUserObject( email:str, username:str, password:str ):
     return({
         "username": username,
@@ -29,12 +26,17 @@ def createUserObject( email:str, username:str, password:str ):
     })
 
 def createUser( email:str, username:str, password:str ):
-    if ( emailExists(email) ): return -1
+    # Do not need to check if email exists
+    # Since the index will take care of that.
 
     # Check if username and password are valid?
 
     user = createUserObject(email, username, password)
-    result = users_db.insert_one(user)
+    try:
+        result = users_db.insert_one(user)
+        return result.inserted_id
+    except pymongo.errors.DuplicateKeyError:
+        return -1
 
     return result.inserted_id
 

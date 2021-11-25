@@ -1,3 +1,4 @@
+# I think this file is uselss
 from  flask import Flask
 from flask_pymongo import PyMongo
 from settings import MONGO_URI
