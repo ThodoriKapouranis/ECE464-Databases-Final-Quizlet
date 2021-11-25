@@ -65,3 +65,13 @@ def searchEmail():
   name = users.getUserByEmail(email)
   return "<p> email </p>"
 
+
+@app.route("/deck/create", methods=["POST"])
+def createDeck():
+  data = request.json
+  tags = data["tags"].split(" ")
+  did = decks.createDeck(data["name"] , tags, data["token"], data["privacy"])
+  if did:
+    return {"status":200, "did": str(did)}
+  else:
+    return {"status":400}

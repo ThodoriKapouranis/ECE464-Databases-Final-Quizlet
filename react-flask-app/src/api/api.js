@@ -75,16 +75,17 @@ async function logoutUser(){
 }
 
 async function createDeck(name, tags, privacy){
+  let token = localStorage.getItem("token")
   const rawResponse = await fetch("/deck/create", {
     method: 'POST',
     headers: {
       'Accept': 'application/json',
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({name: name, tags:tags, privacy:privacy})
+    body: JSON.stringify({name: name, tags:tags, privacy:privacy, token:token})
   });
   
-  const content = await rawResponse
+  const content = await rawResponse.json()
   console.log(content)
 }
 export {registerUser, loginUser, validToken, logoutUser, createDeck}

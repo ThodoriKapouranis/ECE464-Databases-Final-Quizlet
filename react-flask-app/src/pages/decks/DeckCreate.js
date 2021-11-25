@@ -3,6 +3,7 @@ import { Input } from '@chakra-ui/input'
 import { HStack, Text, VStack } from '@chakra-ui/layout'
 import { Radio, RadioGroup } from '@chakra-ui/radio'
 import React from 'react'
+import { createDeck } from '../../api/api'
 import Header from '../../components/header'
 import "../forms.css"
 import "./decks.css"
@@ -15,6 +16,7 @@ export default function DeckCreate() {
   const submitForm = () => {
     let name = document.getElementById("name").value
     let tags = document.getElementById("tags").value
+    createDeck(name, tags, privacy)
 
   }
   const privateRadio = () => <>
