@@ -7,15 +7,19 @@ import { BrowserRouter,  Routes, Route } from 'react-router-dom';
 import Login from './pages/Login';
 import Header from './components/header';
 import Register from './pages/Register';
+import Home from './pages/Home';
+import DecksView from './pages/decks/DecksView';
+import DeckCreate from './pages/decks/DeckCreate';
 
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
       <Routes>
+        <Route path="/" element={<Home/>} />
         <Route path="/login" element={<Login/>} />
         <Route path="/register" element={<Register/>} />
-
-        <Route path="/" element={<Header/>} />
+        <Route path="/decks" element={<DecksView/>}/>
+        <Route path="/decks/create" element={<DeckCreate/>} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>,

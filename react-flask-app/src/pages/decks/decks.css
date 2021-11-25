@@ -1,0 +1,48 @@
+.large-text{
+  font-size: 30px;
+  font-weight: 300; 
+  color: #174233;
+}
+
+.search-btn{
+  width: 100%;
+  height: 40px;
+  border-radius: 8px;
+  border: 0px;
+  background-color: #94e8b4;
+  font-weight: 300; 
+  color: #174233;
+  cursor: pointer;
+}
+
+.search-btn:hover{
+  background-color: #72BDA3; 
+  box-shadow: 0 0 2px #94e8b4;
+  cursor: pointer;
+}
+
+
+.add-btn{
+  margin: 0px;
+  text-decoration: none;
+  width: 50px;
+  height: 50px;
+  border-radius: 50px;
+  background-color: #94e8b4; 
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 40px;
+  color: white;
+  cursor: pointer;
+  font-size: 40px;
+  padding-bottom: 6px;
+}
+
+a{
+  text-decoration: none;
+}
+
+.add-btn:hover{
+  background-color: #72BDA3; 
+}

@@ -1,5 +1,6 @@
 .text-form{
   border-radius: 15px;
+  border:0px;
   height: 6vh;
   width: 16vw;
   padding-left: 40px;
@@ -27,6 +28,5 @@
   color: #72BDA3;
   font-size: calc(20px + 2vmin);
   font-weight: 600;
-  text-shadow: 0 0 10px #3B322C;
-  text-shadow: 0 0 10px #3B322C;
+  text-shadow: 0 0 2px #3B322C;
 }

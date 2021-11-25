@@ -50,7 +50,6 @@ def checkToken():
   else:
     return {"status":400}
 
-
 # Get user by name
 # /search/users/user?=asdfasdf 
 @app.route("/search/users/", methods=["GET"])
@@ -65,3 +64,4 @@ def searchEmail():
   email = request.args.get("email")
   name = users.getUserByEmail(email)
   return "<p> email </p>"
+

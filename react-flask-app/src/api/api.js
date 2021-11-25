@@ -73,4 +73,18 @@ async function logoutUser(){
   console.log(content)
   
 }
-export {registerUser, loginUser, validToken, logoutUser}
+
+async function createDeck(name, tags, privacy){
+  const rawResponse = await fetch("/deck/create", {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({name: name, tags:tags, privacy:privacy})
+  });
+  
+  const content = await rawResponse
+  console.log(content)
+}
+export {registerUser, loginUser, validToken, logoutUser, createDeck}

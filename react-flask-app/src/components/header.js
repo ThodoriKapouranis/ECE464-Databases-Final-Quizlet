@@ -15,7 +15,6 @@ export default function Header() {
     let loggedTime = localStorage.getItem("validLoginDate")
     if (token != null && loggedTime != null){
       let timeDiffSecs = (Date.now() - loggedTime)/1000
-      
       // If it has been 2 minutes since last login token check,
       // do it again. Otherwise, use the stored information
       if (timeDiffSecs >= 120){
@@ -33,38 +32,40 @@ export default function Header() {
       window.location.href='/'
     })
   }
+
+  const topRight = () => <>
+    {loggedIn ? 
+      <HStack spacing="40px" w="100%" justifyContent="right">
+        <Text className="welcome"> 
+          {localStorage.getItem("username")}
+        </Text>
+        <Text className="logout" onClick={logout}> 
+          Logout 
+        </Text>
+      </HStack> :
+      <>
+        <Link to={"/login"} className="login"> Login </Link>
+        <Link to={"/register"} className="login"> Register </Link>
+      </>
+    }
+  </>
   return (
     <HStack  w="100%" h="8vh" margin={0} backgroundColor="#4e6151"> 
 
       <Flex flexDirection={"row"} flexGrow={1}>
         
-        <Flex w="70%" h="8vh" paddingLeft={200} flexGrow={1} 
+        <Flex w="70%" h="8vh" paddingLeft={100} flexGrow={1} 
         justifyContent={"left"} alignItems={"center"}>
-          {/* <Box className={"tile"}> Decks </Box> */}
+          <Link to={"/decks"}> <Box className="tile"> Decks </Box>
+          </Link>
           {/* <Box className={"tile"}> Users </Box> */}
         </Flex>
 
-        <Flex w="30%" h="8vh" 
-        // backgroundColor="#2a6151"
-        paddingLeft={"25px"} paddingRight={"50px"}
+        <Flex w="30%" h="8vh" paddingLeft={"25px"} paddingRight={"50px"}
         justifyContent={"center"} alignItems={"center"}
+        // backgroundColor="#2a6151"
         >
-          {loggedIn ? 
-          <HStack spacing="40px" w="100%" justifyContent="right">
-            <Text className="welcome"> 
-              {localStorage.getItem("username")}
-            </Text>
-            <Text className="logout" onClick={logout}> 
-              Logout 
-            </Text>
-          </HStack> :
-          <>
-            <Link to={"/login"} className="login"> Login </Link>
-            <Link to={"/register"} className="login"> Register </Link>
-          </>
-        }
-
-
+          {topRight()}
         </Flex>
 
       </Flex>

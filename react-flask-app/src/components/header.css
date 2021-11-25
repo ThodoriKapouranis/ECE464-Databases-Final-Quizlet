@@ -1,6 +1,20 @@
+a{
+  text-decoration: none;
+}
+
 .tile{
   margin-right: 60px;
+  font-weight: 600;
+  font-size: 30px;
+  color: #94e8b4;
+  cursor: pointer;
 }
+
+.tile:hover{
+  text-shadow: 0 0 4px #3B322C;
+  text-decoration: solid;
+}
+
 
 .login{
   text-decoration: none;
