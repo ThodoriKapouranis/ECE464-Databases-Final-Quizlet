@@ -71,7 +71,8 @@ def createDeck():
   data = request.json
   tags = data["tags"].split(" ")
   did = decks.createDeck(data["name"] , tags, data["token"], data["privacy"])
-  if did:
+
+  if (did != -1 and did != None):
     return {"status":200, "did": str(did)}
   else:
     return {"status":400}

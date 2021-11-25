@@ -87,5 +87,6 @@ async function createDeck(name, tags, privacy){
   
   const content = await rawResponse.json()
   console.log(content)
+  return content
 }
 export {registerUser, loginUser, validToken, logoutUser, createDeck}

@@ -12,11 +12,14 @@ import "./decks.css"
 export default function DeckCreate() {
 
   const [privacy, setPrivacy] = React.useState(false)
+  const [error, setError] = React.useState(null)
 
   const submitForm = () => {
     let name = document.getElementById("name").value
     let tags = document.getElementById("tags").value
-    createDeck(name, tags, privacy)
+    createDeck(name, tags, privacy).then( data => {
+      if (data["status"]!=200) setError(true) 
+    })
 
   }
   const privateRadio = () => <>
@@ -33,6 +36,10 @@ export default function DeckCreate() {
     </HStack>
   </>
 
+  const errorMessage = () => <>
+    {error ? <Text> An error has occured! </Text> : <></>}
+  </>
+
   return (
     <div>
       <Header/>
@@ -44,6 +51,8 @@ export default function DeckCreate() {
         {privateRadio()}
 
         <Button className="search-btn" onClick={submitForm}> Create Deck </Button>
+
+        {errorMessage()}
       </VStack>
     </div>
   )
