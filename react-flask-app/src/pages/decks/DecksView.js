@@ -26,6 +26,10 @@ export default function DecksView() {
     <Text className="large-text"> Favorited Decks </Text>
   </Box>
 
+  const created = () => <Box marginTop="40px">
+  <Text className="large-text"> Created Decks </Text>
+</Box>
+
   const createButton = () => <>
     <Text className="large-text"  marginTop="40px"> Add new deck</Text>
       <Flex className="add-btn"><Link to={"/decks/create"} >+</Link></Flex>
@@ -47,6 +51,7 @@ export default function DecksView() {
         <Box w="33%"> 
           <VStack>
             {searchArea()}
+            {created()}
             {createButton()}
             {favorites()}
           </VStack>

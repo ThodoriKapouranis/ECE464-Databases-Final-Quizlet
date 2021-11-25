@@ -41,6 +41,11 @@ def createDeck ( name:str, tags:"list[str]", utoken:str, private:bool ):
 	
 	deck = createDeckobject(name, tags, uid, private)
 	result = decks_db.insert_one(deck)
+
+	userQuery = {"_id": uid}
+	userUpdate = {"$push": {"decks_created": result.inserted_id} }
+	resultUser = users_db.update_one(userQuery, userUpdate)
+	pprint(resultUser)
 	return result.inserted_id
 
 def searchDecks (*args, **kwargs):
