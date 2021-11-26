@@ -1,6 +1,8 @@
+import json
 from pprint import pprint
+from bson.objectid import ObjectId
 from flask import request
-from bson.json_util import dumps
+from bson.json_util import dumps, loads
 from main import app
 from mongodb import users, decks, auths, cards
 
@@ -77,13 +79,21 @@ def createDeck():
   else:
     return {"status":400}
 
+
+# https://stackoverflow.com/questions/16586180/typeerror-objectid-is-not-json-serializable
+# ObjectIDs cannot be sent through JSON easily.
+# The solution is to use bson.json_util.dump to convert the JSON to a string which breaks up the 
+# object id. Then we rebuild it back to JSON using json.load()
 @app.route("/user/<username>/decks", methods=["GET"])
 def requestUserDecks(username):
   res = decks.getUsersDecks(username)
   if (res != None):
-    dids_created = [str(x) for x in res["created_decks"]]
-    dids_favorited = [str(x) for x in res["favorite_decks"]]
+    dids_created = [json.loads(dumps(i)) for i in res[0]]
+    dids_favorited = [json.loads(dumps(i)) for i in res[1]]
+
     return {"status" : 200, 
+            "created_decks": dids_created,
+            "favorite_decks": dids_favorited
             }
   else:
     return {"status":400}

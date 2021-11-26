@@ -1,3 +1,5 @@
+import json
+from bson.json_util import dumps, loads
 from bson.objectid import ObjectId
 from datetime import datetime
 from pymongo.collation import Collation, CollationStrength
@@ -73,9 +75,14 @@ def searchDecks (*args, **kwargs):
 def getUsersDecks( username:str ):
 	query = {"username": username}
 	projection = {"_id": 0, "favorite_decks":1, "created_decks":1 }
-
 	user = users_db.find_one(query, projection)
-	return user
+	if (user == None) : return None
+	
+	# Else, go get the decks
+	deckProjection = {"name":1, "tags":1, "date_created":1, "private":1}
+	created_decks = decks_db.find({"_id": {"$in": user["created_decks"]}}, deckProjection)
+	favorite_decks = decks_db.find({"_id":{"$in": user["favorite_decks"]}}, deckProjection)
+	return (created_decks, favorite_decks)
 
 
 ############

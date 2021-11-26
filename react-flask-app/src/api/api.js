@@ -91,8 +91,17 @@ async function createDeck(name, tags, privacy){
 }
 
 async function getUserDecks(username){
-  const rawResponse = await fetch(`/user/${username}/decks`);
-  const content = await rawResponse
+  const rawResponse = await fetch(`/user/${username}/decks`, {
+    method: "get",
+    headers: {
+      'Content-Type': 'application/json'
+    },
+  });
+  const content = await rawResponse.json()
+  // content.created_decks = JSON.parse(content.created_decks)
+  // content.created_decks = JSON.parse(content.favorited_decks)
+
   console.log(content)
+  return content
 }
 export {registerUser, loginUser, validToken, logoutUser, createDeck, getUserDecks}

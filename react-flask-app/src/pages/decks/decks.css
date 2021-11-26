@@ -4,6 +4,38 @@
   color: #174233;
 }
 
+.deck-name{
+  font-size: 20px;
+  font-weight: 300;
+}
+
+.deck-box{
+  text-align: left;
+  border-width: 1px;
+  border-style: solid;
+  margin: 5px;
+  padding: 10px;
+  border-color: #ffffff;
+  border-radius: 10px;
+  border-width: 2px;
+  cursor: pointer;
+}
+
+.deck-box:hover{
+  background-color: #94e8b4;
+}
+.tag{
+  background-color: #4E6151;
+  color: #ffffff;
+  font-weight: 400;
+  padding: 4px;
+  border: 0px;
+  border-radius: 10px;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+}
+
 .search-btn{
   width: 100%;
   height: 40px;
