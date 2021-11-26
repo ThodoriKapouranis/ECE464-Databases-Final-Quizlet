@@ -57,8 +57,10 @@ export default function Header() {
         
         <Flex w="70%" h="8vh" paddingLeft={100} flexGrow={1} 
         justifyContent={"left"} alignItems={"center"}>
-          <Link to={"/decks"}> <Box className="tile"> Decks </Box>
-          </Link>
+          <Link to={"/"}> <Box className="tile"> Home </Box> </Link>
+          <Link to={"/decks"}> <Box className="tile"> Decks </Box> </Link>
+          <Link to={"/users"}> <Box className="tile"> Users </Box> </Link>
+
           {/* <Box className={"tile"}> Users </Box> */}
         </Flex>
 

@@ -4,6 +4,8 @@ import { useParams } from 'react-router'
 import { getUserDecks } from '../../api/api'
 import Header from '../../components/header'
 import "../decks/decks.css"
+import { Link } from "react-router-dom";
+
 export default function Userpage() {
 
   const {username} = useParams()
@@ -30,10 +32,12 @@ export default function Userpage() {
     </Box>
 
   const renderDeckList = decksJson => decksJson.map( deck => (
-    <Box className="deck-box">
-      <Text className="deck-name" margin={0} > {deck.name} </Text>
-        {renderTags(deck.tags)}
-    </Box>
+    <Link to={`/decks/${deck._id.$oid}`} >
+      <Box className="deck-box" id={deck._id.$oid} >
+        <Text className="deck-name" margin={0} > {deck.name} {deck.private ? "🔒" : false} </Text>
+          {renderTags(deck.tags)}
+      </Box>
+    </Link>
   ))  
 
   const renderTags = tagList => <HStack maxWidth="500px" flexWrap="wrap">

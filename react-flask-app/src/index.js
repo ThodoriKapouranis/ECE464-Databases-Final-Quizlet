@@ -11,6 +11,9 @@ import Home from './pages/Home';
 import DecksView from './pages/decks/DecksView';
 import DeckCreate from './pages/decks/DeckCreate';
 import Userpage from './pages/users/Userpage';
+import DeckSearch from './pages/decks/DeckSearch';
+import DeckView from './pages/decks/DeckView';
+import UserSearch from './pages/users/UserSearch';
 
 ReactDOM.render(
   <React.StrictMode>
@@ -19,9 +22,17 @@ ReactDOM.render(
         <Route path="/" element={<Home/>} />
         <Route path="/login" element={<Login/>} />
         <Route path="/register" element={<Register/>} />
-        <Route path="/decks" element={<DecksView/>}/>
-        <Route path="/decks/create" element={<DeckCreate/>} />
         <Route path="/user/:username" element={<Userpage/>} />
+
+        <Route path="/users" element={<UserSearch/>} />
+        <Route path="/users/search/for" element={<UserSearch/>} />
+
+        
+        <Route path="/decks" element={<DecksView/>}/>
+        <Route path="/decks/create" element={<DeckCreate/>} />        
+        <Route path="/decks/search/for" element={<DeckSearch/>} />
+        <Route path="/decks/:did" element={<DeckView/>} />
+
       </Routes>
     </BrowserRouter>
   </React.StrictMode>,
