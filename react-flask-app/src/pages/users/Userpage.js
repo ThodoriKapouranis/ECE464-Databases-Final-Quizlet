@@ -36,7 +36,7 @@ export default function Userpage() {
     </Box>
   ))  
 
-  const renderTags = tagList => <HStack>
+  const renderTags = tagList => <HStack maxWidth="500px" flexWrap="wrap">
     {tagList.map( tag => ( <Flex className="tag"> {tag} </Flex> ))}
   </HStack>
 
