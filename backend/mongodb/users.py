@@ -56,6 +56,22 @@ def attemptLogin ( email: str, password:str ):
         print("User does not exist")
         return None
 
+def toggleFavorite ( did: ObjectId, utoken:str):
+
+    if not (uid := auths.getUid(utoken)):
+        print("INVALID USER TRYING TO DO SOMETHING@!")
+        return -1
+    query = {"_id": uid}
+    arr = users_db.find_one(query, {"_id":0, "favorite_decks" : 1})
+
+    if did not in arr["favorite_decks"]:
+        insert = {"$push": {"favorite_decks": did} }
+        res = users_db.update_one(query, insert)
+    else:
+        insert = {"$pull": {"favorite_decks": did} }
+        res = users_db.update_one(query, insert)
+    return res if res else -1
+	
 if (__name__ == "__main__"):
     # users_db.drop()
     # auths_db.drop()

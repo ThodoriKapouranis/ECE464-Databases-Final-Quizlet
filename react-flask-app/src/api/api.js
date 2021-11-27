@@ -104,4 +104,49 @@ async function getUserDecks(username){
   console.log(content)
   return content
 }
-export {registerUser, loginUser, validToken, logoutUser, createDeck, getUserDecks}
+
+async function requestDeckInfo(did){
+  const rawResponse = await fetch(`/deck/${did}`, {
+    method: "get",
+    headers: {
+      'Content-Type': 'application/json'
+    },
+  });
+  const content = await rawResponse.json()
+  console.log(content)
+  return content
+}
+
+async function addComment(did, comment){
+  let token = localStorage.getItem("token")
+  const rawResponse = await fetch(`/deck/${did}/comment`, {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({comment:comment, token:token})
+  });
+  const content = await rawResponse.json()
+  console.log(content)
+  return content
+}
+
+async function addToFavorites(did){
+  let token = localStorage.getItem("token")
+  const rawResponse = await fetch(`/deck/${did}/favorite`, {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({token:token})
+  });
+  const content = await rawResponse.json()
+  console.log(content)
+  return content
+}
+
+export {registerUser, loginUser, validToken, logoutUser, createDeck, getUserDecks, requestDeckInfo, addComment, addToFavorites}
+
+

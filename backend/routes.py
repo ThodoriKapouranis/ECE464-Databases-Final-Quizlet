@@ -100,8 +100,43 @@ def requestUserDecks(username):
 
 # # Single Deck view (Deck, comments, ratings)
 # # url: did  | json: token
-# @app.route("/deck/<did>", methods=["GET"])
-# def getDeck():
+@app.route("/deck/<did>", methods=["GET"])
+def getDeckInfo(did):
+  res = decks.getDeck( ObjectId(did) )
+  # Deconstruct it and reconstruct it so we can send object IDs over
+  if (res != None):
+    # Write the code to average the ratings to display on frontend
+    # ratingAverage = 0
+    # listOfRatings = res["ratings"]
+    # for i in listOfRatings:
+      # ...
+    res = json.loads( dumps(res) )
+    return {"status":200, "deck": res}
+  else:
+    return {"status":400}
+
+@app.route("/deck/<did>/comment", methods=["POST"])
+def addComment(did):
+  data = request.json
+  comments = data["comment"]
+  token = data["token"]
+  # def addComment ( did:str, utoken:str, content:str ):
+  res = decks.addComment(ObjectId(did), token, comments )
+  if (res != -1):
+    return {"status":200}
+  else:
+    return {"status":400}
+
+@app.route("/deck/<did>/favorite", methods=["POST"])
+def addToFavorite(did):
+  data = request.json
+  token = data["token"]
+  res = users.toggleFavorite(ObjectId(did), token)
+
+  if (res != -1):
+    return {"status":200}
+  else:
+    return {"status":400}
 
 # # Add comment (visible on single deck page)
 # url: did | json: comment, token

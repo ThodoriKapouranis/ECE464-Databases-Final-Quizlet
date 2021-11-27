@@ -48,6 +48,7 @@ def createDeck ( name:str, tags:"list[str]", utoken:str, private:bool ):
 	userUpdate = {"$push": {"created_decks": result.inserted_id} }
 	resultUser = users_db.update_one(userQuery, userUpdate)
 	pprint(resultUser)
+	
 	return result.inserted_id
 
 def searchDecks (*args, **kwargs):
@@ -70,6 +71,7 @@ def searchDecks (*args, **kwargs):
 	if (tags != None): query["tags"] = {"$all": tags}
 	
 	projection = {"comments": 0, "cards":0 }
+	
 	return decks_db.find(query, projection)
 
 def getUsersDecks( username:str ):
@@ -82,9 +84,18 @@ def getUsersDecks( username:str ):
 	deckProjection = {"name":1, "tags":1, "date_created":1, "private":1}
 	created_decks = decks_db.find({"_id": {"$in": user["created_decks"]}}, deckProjection)
 	favorite_decks = decks_db.find({"_id":{"$in": user["favorite_decks"]}}, deckProjection)
+	
 	return (created_decks, favorite_decks)
 
-
+# getDeckInfo  
+# Returns everything except for the cards array, that will be a seperate
+# function/query call
+def getDeck( did: str):
+	query = {"_id": did}
+	projection = {"cards": 0, "admin_ids" : 0, "editor_ids" : 0, "whitelist_ids" : 0}
+	
+	return decks_db.find_one( query, projection )
+	
 ############
 # Comments #
 ############
@@ -140,6 +151,7 @@ def addRating ( did:ObjectId, utoken:str, rating:int ):
 	# If no rating is found (matched_count==0), then insert new rating.
 	if ( decks_db.update_one(query_update, update).matched_count == 0 ):
 		decks_db.update_one(query_insert, insert)
+
 
 ######################
 # Deck Authorization #
