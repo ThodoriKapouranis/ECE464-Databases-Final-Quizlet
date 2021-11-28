@@ -113,6 +113,7 @@ async function requestDeckInfo(did){
     },
   });
   const content = await rawResponse.json()
+  content.deck.comments.reverse()
   console.log(content)
   return content
 }

@@ -1,4 +1,5 @@
 import json
+from os import name
 from bson.json_util import dumps, loads
 from bson.objectid import ObjectId
 from datetime import datetime
@@ -100,9 +101,10 @@ def getDeck( did: str):
 # Comments #
 ############
 
-def createCommentObject ( uid:ObjectId, content:str ):
+def createCommentObject ( uid:ObjectId, username:name, content:str ):
 	return {
 		"uid": uid,
+		"username": username,
 		"content": content,
 		"date_created": datetime.now()
 	}
@@ -112,8 +114,9 @@ def addComment ( did:str, utoken:str, content:str ):
 	if not (uid := auths.getUid(utoken)):
 		print("Invalid user trying to comment!")
 		return -1
-	
-	comment = createCommentObject(uid, content)
+	name = users_db.find_one( {"_id": uid}, {"username":1})["username"]
+
+	comment = createCommentObject(uid, name, content)
 	
 	query = {"_id": did }
 	update = {"$push": {"comments": comment}}
