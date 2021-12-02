@@ -16,7 +16,7 @@ export default function Userpage() {
   React.useEffect(() => {
     getUserDecks(username).then( (data) => {
       setCreated(data.created_decks)
-      setFavorited(data.favorited_decks)
+      setFavorited(data.favorite_decks)
     })
   },[username])
 

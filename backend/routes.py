@@ -54,12 +54,16 @@ def checkToken():
 
 # Get user by name
 # /search/users/user?=asdfasdf 
-@app.route("/search/users/", methods=["GET"])
-def searchUsers():
-  username = request.args.get("user")
-  name = users.getUsersByName(username)
-  pprint( dumps( list(name) ) )
-  return "<p> name </p>"
+@app.route("/search/users/<username>", methods=["GET"])
+def searchUsers(username):
+  res = users.getUsersByName(username)
+  if (res != None):
+    res = json.loads( dumps(res) )
+    return {"status":200, "users": res}
+  else:
+    return {"status":400}
+
+
 
 @app.route("/search/email/", methods=["GET"])
 def searchEmail():

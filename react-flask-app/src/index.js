@@ -24,13 +24,13 @@ ReactDOM.render(
         <Route path="/register" element={<Register/>} />
         <Route path="/user/:username" element={<Userpage/>} />
 
-        <Route path="/users" element={<UserSearch/>} />
-        <Route path="/users/search/for" element={<UserSearch/>} />
+        <Route path="/users/search" element={<UserSearch/>} />
+        <Route path="/users/search/username" element={<UserSearch/>} />
 
         
         <Route path="/decks" element={<DecksView/>}/>
         <Route path="/decks/create" element={<DeckCreate/>} />        
-        <Route path="/decks/search/for" element={<DeckSearch/>} />
+        <Route path="/decks/search/name" element={<DeckSearch/>} />
         <Route path="/decks/:did" element={<DeckView/>} />
 
       </Routes>

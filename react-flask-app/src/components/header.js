@@ -59,7 +59,7 @@ export default function Header() {
         justifyContent={"left"} alignItems={"center"}>
           <Link to={"/"}> <Box className="tile"> Home </Box> </Link>
           <Link to={"/decks"}> <Box className="tile"> Decks </Box> </Link>
-          <Link to={"/users"}> <Box className="tile"> Users </Box> </Link>
+          <Link to={"/users/search"}> <Box className="tile"> Users </Box> </Link>
 
           {/* <Box className={"tile"}> Users </Box> */}
         </Flex>

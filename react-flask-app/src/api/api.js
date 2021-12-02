@@ -148,6 +148,18 @@ async function addToFavorites(did){
   return content
 }
 
-export {registerUser, loginUser, validToken, logoutUser, createDeck, getUserDecks, requestDeckInfo, addComment, addToFavorites}
+async function searchUsers(username){
+  const rawResponse = await fetch(`/search/users/${username}`, {
+    method: "get",
+    headers: {
+      'Content-Type': 'application/json'
+    },
+  });
+  const  content = await rawResponse.json()
+  console.log(content)
+  return content
+}
+
+export {registerUser, loginUser, validToken, logoutUser, createDeck, getUserDecks, requestDeckInfo, addComment, addToFavorites, searchUsers}
 
 
