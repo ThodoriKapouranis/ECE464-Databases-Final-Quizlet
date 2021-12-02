@@ -128,3 +128,23 @@ a{
 .add-btn:hover{
   background-color: #72BDA3; 
 }
+
+.add-field{
+  height:30px;
+  width: 100px;
+  border-radius: 10px;
+  background-color: rgb(102, 124, 197);
+  cursor: pointer;
+  margin: 0px;
+}
+
+.add-field:hover{
+  background-color: rgb(252, 252, 252);
+}
+
+.delete-field{
+  cursor: pointer;
+}
+.delete-field:hover{
+  background-color: pink;
+}
