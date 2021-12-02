@@ -9,6 +9,7 @@ import "../forms.css"
 
 
 export default function DeckSearchBar() {
+
   const searchArea = () => <>
     <Text className="large-text"> Search Decks </Text>
     <Input placeholder="Deck name" width="90%" className="text-form" id="deckname"/> 
@@ -32,7 +33,7 @@ export default function DeckSearchBar() {
     tags = tags.filter( c => c !== "" )
     // Dont bother with keeping unique values, let backend do that shit
 
-    let searchURL = `/decks/search/name?=${deckName}&tag=`
+    let searchURL = `/decks/search/?name=${deckName}&tags=`
 
     for ( const  v of Object.values(tags) ){
       searchURL += v + ","

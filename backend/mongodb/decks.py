@@ -61,15 +61,15 @@ def searchDecks (*args, **kwargs):
 	At least one argument must be given for a query to run
 	'''
 	if len(kwargs) == 0:
-		print("ERROR : No arguments given")
-		return -1
+		print("(searchDecks) ERROR : No arguments given")
+		return None
 
 	name, tags = kwargs.get("name"), kwargs.get("tags")
 
 	# Build the query given available information
 	query = {}
 	if (name != None): query["name"] = {"$regex": name}
-	if (tags != None): query["tags"] = {"$all": tags}
+	if (tags != None and tags !=['']): query["tags"] = {"$all": tags}
 	
 	projection = {"comments": 0, "cards":0 }
 	

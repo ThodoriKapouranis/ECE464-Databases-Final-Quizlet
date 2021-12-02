@@ -22,6 +22,7 @@ export default function UserSearch() {
       </Link>
     </>
   )
+  
   const displayResultCount = () =>  <> 
     <p> Users found: {resultAmount} </p>
   </>

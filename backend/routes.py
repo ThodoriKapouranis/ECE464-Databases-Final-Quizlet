@@ -63,7 +63,16 @@ def searchUsers(username):
   else:
     return {"status":400}
 
-
+@app.route("/search/decks/", methods=["GET"])
+def searchDecks():
+  user = request.args.get('name')
+  tags = request.args.get('tags').split(",")
+  res = decks.searchDecks(name=user, tags=tags)
+  if ( res != None):
+    res = json.loads( dumps(res) )
+    return { "status":200, "decks": res }
+  else:
+    return { "status":400 }
 
 @app.route("/search/email/", methods=["GET"])
 def searchEmail():

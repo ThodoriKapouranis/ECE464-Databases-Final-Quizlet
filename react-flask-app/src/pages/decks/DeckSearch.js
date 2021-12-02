@@ -1,18 +1,50 @@
 import { Button } from '@chakra-ui/button'
 import { Input } from '@chakra-ui/input'
-import { Box, Flex, Text, VStack } from '@chakra-ui/layout'
+import { Box, Flex, HStack, Text, VStack } from '@chakra-ui/layout'
 import React from 'react'
+import { searchDecks } from '../../api/api'
 import Header from '../../components/header'
 import DeckSearchBar from './DeckSearchBar';
+import "./decks.css"
+import { Link } from "react-router-dom";
 
 export default function DeckSearch() {
 
-  const searchResult = () => <>
-    <p> SEARCH RESULTS GO HERE</p>
+  const [searchResults, setSearchResults] = React.useState(null)
+  const [resultAmount, setResultAmount] = React.useState(null)
+
+  const displayResultCount = () =>  <> 
+    <p> Decks found: {resultAmount} </p>
   </>
 
+  const renderDeckList = decksJson => decksJson.map( deck => (
+    <Link to={`/decks/${deck._id.$oid}`} >
+      <Box className="deck-box" id={deck._id.$oid} >
+        <Text className="deck-name" margin={0} > {deck.name} {deck.private ? "🔒" : false} </Text>
+          {renderTags(deck.tags)}
+      </Box>
+    </Link>
+  ))  
+
+  const renderTags = tagList => <HStack maxWidth="500px" flexWrap="wrap">
+    {tagList.map( tag => ( <Flex className="tag"> {tag} </Flex> ))}
+  </HStack>
+
+
   React.useEffect( () => {
-    console.log(" DO THE API CALL! ")
+    let search = window.location.search;
+    let params = new URLSearchParams(search);
+    let deckname = params.get('name')
+    let tags = params.get('tags')
+    searchDecks(deckname, tags).then( data => {
+      if (data.status === 200){
+        setSearchResults(data.decks)
+        setResultAmount(data.decks.length)
+      }
+      else {
+        setResultAmount(0)
+      }
+    })
   }, [])
 
   return (
@@ -30,8 +62,8 @@ export default function DeckSearch() {
         <Box w="33%"> 
           <VStack>
             <DeckSearchBar/>
-            <p> Write the search API call </p>
-            {searchResult()}
+            {searchResults ? renderDeckList(searchResults) :  <></>}
+            {resultAmount ? displayResultCount() : <></>}
           </VStack>
         </Box>
 

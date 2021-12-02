@@ -30,7 +30,7 @@ ReactDOM.render(
         
         <Route path="/decks" element={<DecksView/>}/>
         <Route path="/decks/create" element={<DeckCreate/>} />        
-        <Route path="/decks/search/name" element={<DeckSearch/>} />
+        <Route path="/decks/search/" element={<DeckSearch/>} />
         <Route path="/decks/:did" element={<DeckView/>} />
 
       </Routes>

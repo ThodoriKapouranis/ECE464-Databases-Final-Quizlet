@@ -160,6 +160,18 @@ async function searchUsers(username){
   return content
 }
 
-export {registerUser, loginUser, validToken, logoutUser, createDeck, getUserDecks, requestDeckInfo, addComment, addToFavorites, searchUsers}
+async function searchDecks(deckname,tags){
+  const rawResponse = await fetch(`/search/decks/?name=${deckname}&tags=${tags}`, {
+    method: "get",
+    headers: {
+      'Content-Type': 'application/json'
+    },
+  });
+  const content = await rawResponse.json()
+  console.log(content)
+  return content
+}
+export {registerUser, loginUser, validToken, logoutUser, createDeck,          getUserDecks, requestDeckInfo, addComment, addToFavorites, 
+searchUsers, searchDecks}
 
 
