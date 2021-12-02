@@ -75,8 +75,9 @@ def creatAuth ( id:ObjectId ) :
     else:
         print("User logged in")
         return token
+    
 
-
+    
 # if (__name__ == "__main__"):
 #     #auths_db.drop()
 #     attemptLogin("h0@gmail.com", "123")

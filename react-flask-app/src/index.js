@@ -14,6 +14,7 @@ import Userpage from './pages/users/Userpage';
 import DeckSearch from './pages/decks/DeckSearch';
 import DeckView from './pages/decks/DeckView';
 import UserSearch from './pages/users/UserSearch';
+import DeckAddCard from './pages/decks/DeckAddCard';
 
 ReactDOM.render(
   <React.StrictMode>
@@ -31,7 +32,9 @@ ReactDOM.render(
         <Route path="/decks" element={<DecksView/>}/>
         <Route path="/decks/create" element={<DeckCreate/>} />        
         <Route path="/decks/search/" element={<DeckSearch/>} />
+        
         <Route path="/decks/:did" element={<DeckView/>} />
+        <Route path="/decks/:did/add" element={<DeckAddCard/>} />
 
       </Routes>
     </BrowserRouter>

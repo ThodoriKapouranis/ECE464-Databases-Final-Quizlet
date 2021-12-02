@@ -155,6 +155,19 @@ def addRating ( did:ObjectId, utoken:str, rating:int ):
 	if ( decks_db.update_one(query_update, update).matched_count == 0 ):
 		decks_db.update_one(query_insert, insert)
 
+def getRating( did: ObjectId ):
+	query = {"_id" : did}
+
+	agre = {"$avg": "$ratings.rating"} 
+
+	if not (avgRate := decks_db.aggregate([{"$match": query}, {"$project": {"avg" : agre}}])):
+		print("ERROR: did can not be found")
+	
+	else:
+		avg = list(avgRate)[0]['avg']
+	
+	return avg
+
 
 ######################
 # Deck Authorization #
@@ -199,7 +212,7 @@ def userAuthorizationLevel ( did:ObjectId, uid:str ):
 # If a deck is public the user can still be upgraded to be whitelisted for it.
 # This doesn't really matter though as the whitelist_ids field isn't used for 
 # public decks
-def authorizeUser ( did:ObjectId, utoken:str, tuid:ObjectId, level:int ):
+def authorizeUser ( did:ObjectId, utoken:str, tusername:str, level:int ):
 	'''
 	:Parameters:
 	- `did`: Deck ID.
@@ -213,6 +226,12 @@ def authorizeUser ( did:ObjectId, utoken:str, tuid:ObjectId, level:int ):
 	>>> ex: admin(3) can promote people to editor(2), whitelist(1)
 	>>> ... etc
 	'''
+	query = {"username": tusername}
+
+	tuser = users_db.find_one(query)
+
+	tuid = tuser['_id']
+
 	if ( level > 3 or level < 0):
 		print("Invalid promotion level")
 		return -1

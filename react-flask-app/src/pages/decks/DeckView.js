@@ -4,14 +4,17 @@ import { Box, Flex, HStack, Text, VStack } from '@chakra-ui/layout'
 import React from 'react'
 import { render } from 'react-dom'
 import { useParams } from 'react-router'
-import { requestDeckInfo, addComment, addToFavorites } from '../../api/api'
+import { requestDeckInfo, addComment, addToFavorites, rateDeck, authorizeUser } from '../../api/api'
 import Header from '../../components/header'
 import "../forms.css"
 import "./decks.css"
+import { Link } from "react-router-dom";
 
 export default function DeckView() {
   const {did} = useParams()
   const [deck, setDeck] = React.useState(false)
+  const [rating, setRating] = React.useState(false)
+  const [auth, setAuth] = React.useState(0)
 
   const commentSearch = () => <>
     <Input placeholder="Comment here" className="text-form" id="comment"/>
@@ -35,12 +38,72 @@ export default function DeckView() {
     addToFavorites(did)
   } 
 
+  const authorizationBox = () => <>
+    <Input placeholder="Enter username to promote" id="auth-username" />
+    <HStack> 
+      {auth>1 ? authorizationButton("whitelist", 1) : <></> }
+      {auth>2 ? authorizationButton("editor", 2) : <></> }
+      {auth>3 ? authorizationButton("admin", 3) : <></> }
+    </HStack>
+  </>
+
+  const authorizationButton = (level_name, level) => <>
+    <Button onClick={() => sendAuthorizationRequest(level)}> {level_name} </Button>
+  </>
+
+  const sendAuthorizationRequest = (level) => {
+    let username = document.getElementById("auth-username").value
+    authorizeUser(did, username, level).then( data => {
+      if (data.status===200){
+        alert('cool')
+      }
+    })
+  }
+
+  const addCardButton = () => <>
+      { auth>1 ?
+        <Link to={`/decks/${did}/add`} >
+          <Button > Add card </Button> 
+        </Link>
+        : <></>
+      }
+    </>
+  
+
+  const ratingBtns = () => 
+    <HStack>
+      <Button onClick={() => submitRating(1)}>1</Button>
+      <Button onClick={() => submitRating(2)}>2</Button>
+      <Button onClick={() => submitRating(3)}>3</Button>
+      <Button onClick={() => submitRating(4)}>4</Button>
+      <Button onClick={() => submitRating(5)}>5</Button>
+  </HStack>
+
+  const submitRating = (num) => {
+    rateDeck(did, num).then( data => { 
+      if (data.status !== 200){
+        alert("An error has occurred")
+      }
+      else{
+        window.location.reload()
+      }
+    })
+  }
+
   const renderDeck = (deck) => <>
     <VStack>
       <Text className="deck-name-display"> {deck.name}</Text> 
       <Button className="fav-btn" onClick={favoriteDeck} > 💖  </Button>
+      
+      <Text>Rating: {rating}/5</Text>
+      {ratingBtns()}
+
       <Button className="study-btn"> Study </Button>
+      {addCardButton()}
+      {authorizationBox()}
+      
       {commentSearch()}
+
       {renderComments(deck.comments)}
     </VStack>
   </>
@@ -68,6 +131,8 @@ export default function DeckView() {
   React.useEffect(() => {
     requestDeckInfo(did).then( data => {
       setDeck(data.deck)
+      setRating(data.rating)
+      setAuth(data.authLevel)
     })
   }, [did])
 

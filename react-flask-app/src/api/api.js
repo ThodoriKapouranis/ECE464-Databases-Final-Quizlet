@@ -106,11 +106,14 @@ async function getUserDecks(username){
 }
 
 async function requestDeckInfo(did){
+  let token = localStorage.getItem("token")
   const rawResponse = await fetch(`/deck/${did}`, {
-    method: "get",
+    method: 'POST',
     headers: {
+      'Accept': 'application/json',
       'Content-Type': 'application/json'
     },
+    body: JSON.stringify({"token": token})
   });
   const content = await rawResponse.json()
   content.deck.comments.reverse()
@@ -171,7 +174,36 @@ async function searchDecks(deckname,tags){
   console.log(content)
   return content
 }
+
+async function rateDeck(did, rating){
+  let token = localStorage.getItem("token")
+  const rawResponse = await fetch(`/deck/${did}/rate`, {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({token:token, "rating": rating})
+  });
+  const content = await rawResponse.json()
+  console.log(content)
+  return content
+}
+
+async function authorizeUser(did, username, level){
+  let token = localStorage.getItem("token")
+  const rawResponse = await fetch(`/deck/${did}/authorize`, {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({token:token, "username": username, "level": level})
+  });
+  const content = await rawResponse.json()
+  console.log(content)
+  return content
+}
+
 export {registerUser, loginUser, validToken, logoutUser, createDeck,          getUserDecks, requestDeckInfo, addComment, addToFavorites, 
-searchUsers, searchDecks}
-
-
+searchUsers, searchDecks, rateDeck, authorizeUser}

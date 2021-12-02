@@ -113,18 +113,26 @@ def requestUserDecks(username):
 
 # # Single Deck view (Deck, comments, ratings)
 # # url: did  | json: token
-@app.route("/deck/<did>", methods=["GET"])
+@app.route("/deck/<did>", methods=["POST"])
 def getDeckInfo(did):
-  res = decks.getDeck( ObjectId(did) )
-  # Deconstruct it and reconstruct it so we can send object IDs over
-  if (res != None):
+  # Get the user's tokens to figure out their authorization level
+  # so that the proper things are returned to the frontend 
+  # for better user-specific rendering.
+  data = request.json
+  utoken = data["token"]
+  uid = auths.getUid(utoken)
+
+  deck = decks.getDeck( ObjectId(did) )
+  if (deck != None and uid != None):
     # Write the code to average the ratings to display on frontend
     # ratingAverage = 0
     # listOfRatings = res["ratings"]
     # for i in listOfRatings:
       # ...
-    res = json.loads( dumps(res) )
-    return {"status":200, "deck": res}
+    authLevel = decks.userAuthorizationLevel(ObjectId(did), uid)
+    deckJson = json.loads( dumps(deck) )
+    avgRating = decks.getRating( ObjectId(did) )
+    return {"status":200, "deck": deckJson, "authLevel":authLevel,  "rating": avgRating}
   else:
     return {"status":400}
 
@@ -158,6 +166,28 @@ def addToFavorite(did):
 
 # # Add rating (visible on single deck page)
 # # url: did | json: comment, token
-# @app.route("/deck/<did>/rate", methods=["POST"])
-# def addDeckRating():
+@app.route("/deck/<did>/rate", methods=["POST"])
+def addDeckRating(did):
+  data = request.json
+  token = data["token"]
+  rating = data["rating"]
 
+  res = decks.addRating(ObjectId(did), token, rating)
+  if (res != -1): return {"status":200}
+  else:           return {"status":400}
+
+# # Promote someone's auth lv
+@app.route("/deck/<did>/authorize", methods = ["POST"])
+def authorizeUser(did):
+  data = request.json
+
+  token = data["token"]
+  user = data["username"]
+  level = data["level"]
+
+  res = decks.authorizeUser(ObjectId(did), token, user, level)
+
+  if (res != -1):
+    return {"status": 200}
+  else:
+    return {"status": 400}

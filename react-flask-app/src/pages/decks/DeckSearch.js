@@ -16,6 +16,7 @@ export default function DeckSearch() {
   const displayResultCount = () =>  <> 
     <p> Decks found: {resultAmount} </p>
   </>
+  // ok 
 
   const renderDeckList = decksJson => decksJson.map( deck => (
     <Link to={`/decks/${deck._id.$oid}`} >
@@ -41,9 +42,8 @@ export default function DeckSearch() {
         setSearchResults(data.decks)
         setResultAmount(data.decks.length)
       }
-      else {
+      else 
         setResultAmount(0)
-      }
     })
   }, [])
 
