@@ -4,19 +4,36 @@ import { Box, Divider, Flex, HStack, Text, VStack } from '@chakra-ui/layout'
 import React from 'react'
 import Header from '../../components/header'
 import "./decks.css"
+import ImageUploading from 'react-images-uploading';
+import { uploadCard } from '../../api/api'
+import { useParams } from 'react-router'
 
 export default function DeckAddCard() {
-  
+  const {did} = useParams()
   const [frontFields, setFront] = React.useState([])
-  const [backFields, setBack] = React.useState([])
+  const [frontIdList, setFrontIdList] = React.useState([])
+  const [frontId, setFrontId] = React.useState(0)
 
-  
+  const [backFields, setBack] = React.useState([])
+  const [backIdList, setBackIdlist] = React.useState([])
+  const [backId,setBackId] = React.useState(0)
+
+  const [frontImages, setFrontImages] = React.useState([]);
+  const [backImages, setBackImages] = React.useState([]);
+
+  const maxImagePerField = 1
+
+  // Create the component and set their ids to the next available id
+  // f0 f1 f2 f3 ...
+  // b0 b1 b2 b3 ...
   const addFrontComponent = (HTMLelement) => {
-    setFront([...frontFields, HTMLelement(frontFields.length)])
+    setFront([...frontFields, HTMLelement('f', frontId)])
+    setFrontId(frontId+1)
   }
 
   const addBackComponent = (HTMLelement) => {
-    setBack([...backFields, HTMLelement])
+    setBack([...backFields, HTMLelement('b', backId)])
+    setBackId(backId+1)
   }
 
   const removeFrontComponent = (i) => {
@@ -25,22 +42,44 @@ export default function DeckAddCard() {
     setFront( newFrontFields )
   }
 
-  const textField = (i) => <Flex flexDirection="row">
+  const textField = (fb,i) => <Flex flexDirection="row" id={`${fb}${i}`}>
     <Box w="80%">
-      <Input placeholder="Text goes here" />
+      <input id={`${fb}txt${i}`} placeholder="Text goes here" 
+      name={`${fb}txt${i}`}
+      className="grabme"/>
     </Box>
     <Box w="20%">
-      <Button className="delete-field" onClick={()=>removeFrontComponent(i)}>❌</Button>
+      <Button className="delete-field">❌</Button>
     </Box>
   </Flex>
 
-  const imageField = <>
-    <Input placeholder="Upload image somehow..." />
-  </>
+  const imageField = (fb, i) => <Flex flexDirection="row" id={`${fb}${i}`}>
+    <Box w="80%">
+      <input 
+        type="file" 
+        name={`${fb}img${i}`}
+        className="grabme"
+        id={`${fb}img${i}`}  accept="image/*" 
+      />
+    </Box>
+    <Box w="20%">
+      <Button className="delete-field">❌</Button>
+    </Box>
+  </Flex>
 
-  const audioField = <>
-    <Input placeholder="Upload audio somehow..." />
-  </>
+  const audioField = (fb, i) => <Flex flexDirection="row" id={`${fb}${i}`}>
+    <Box w="80%">
+      <input 
+        type="file" 
+        name={`${fb}aud${i}`}
+        className="grabme"
+        id={`${fb}aud${i}`} accept=".mp3" 
+      />
+    </Box>
+    <Box w="20%">
+      <Button className="delete-field">❌</Button>
+    </Box>
+  </Flex>
 
   const addFrontFieldButtons = () => <HStack>
     <Button className="add-field field1" backgroundColor="#FF6666"
@@ -55,18 +94,45 @@ export default function DeckAddCard() {
 
   const addBackFieldButtons = () => <HStack>
     <Button className="add-field field1" backgroundColor="#FF6666"
-      onClick={() => addBackComponent(<p>1</p>)}> Text </Button>
+      onClick={() => addBackComponent(textField)}> Text </Button>
 
     <Button className="add-field field1" backgroundColor="#66FF66"
-      onClick={() => addBackComponent(<p>1</p>)}> Image </Button>
+      onClick={() => addBackComponent(imageField)}> Image </Button>
       
     <Button className="add-field field1" backgroundColor="#66B2FF"
-      onClick={() => addBackComponent(<p>1</p>)}> Audio </Button>
+      onClick={() => addBackComponent(audioField)}> Audio </Button>
   </HStack>
 
 
   const renderComponents = (listOfComponents) => 
   listOfComponents.map( (component) =>  component) 
+
+  const submitForm = () => {
+    let front = document.getElementById("front-container")
+    let back  = document.getElementById("back-container")
+
+
+    let frontForm = new FormData(front)
+    let backForm = new FormData(back)
+
+    // for (var [key, value] of frontForm.entries()) { 
+    //   let reader = new FileReader()
+    //   reader.onload = (event) => console.log(event.target.result);
+    //   if (typeof(value) === "object" ){
+    //     frontForm.set(key, reader.readAsDataURL(value))
+    //   }
+    // }
+
+    // for (var [key, value] of backForm.entries()) { 
+    //   let reader = new FileReader()
+    //   reader.onload = (event) => console.log(event.target.result);
+    //   if (typeof(value) === "object" ){
+    //     backForm.set(key, reader.readAsDataURL(value))
+    //   }
+    // }
+    uploadCard(did, frontForm, backForm)
+
+  }
 
   return (
     <>
@@ -75,11 +141,9 @@ export default function DeckAddCard() {
         {/* Front side of the card */}
         <Box>
           <Text> Front side </Text>
-          <Box id="front-container"> 
-            <VStack>
-              {renderComponents(frontFields)}
-            </VStack>
-          </Box>
+          <form id="front-container" method="post" enctype="mutlipart/form-data"> 
+            {renderComponents(frontFields)}
+          </form>
 
           {addFrontFieldButtons()}
         </Box>
@@ -87,13 +151,15 @@ export default function DeckAddCard() {
         {/* Back side of the card */}
         <Box>
           <Text> Back side</Text>
-          <Box id="back-container"> 
+          <form id="back-container" method="post" enctype="mutlipart/form-data"> 
             {renderComponents(backFields)}
-          </Box>
+          </form>
 
           {addBackFieldButtons()}
         </Box>
+        <Button onClick={()=> submitForm()}> Add card </Button>
       </VStack>
+      
     </>
   )
 }

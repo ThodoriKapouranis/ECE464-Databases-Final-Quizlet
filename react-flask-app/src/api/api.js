@@ -205,5 +205,34 @@ async function authorizeUser(did, username, level){
   return content
 }
 
+async function uploadCard(did, frontForm, backForm){
+  let ultimateForm = new FormData()
+  let token = localStorage.getItem("token")
+
+  for ( var [k,v] of frontForm.entries()){
+    ultimateForm.set(k,v)
+  }
+  for ( var [k,v] of backForm.entries()){
+    ultimateForm.set(k,v)
+  }
+
+  for ( var [k,v] of ultimateForm.entries() ) {
+    console.log("new one")
+    console.log(k,v)
+  }
+
+  const rawResponse = await fetch(`/deck/${did}/add`, {
+    method: 'POST',
+    headers: {
+      "enctype": "multipart/form-data",
+      "token": token,
+    },
+    body: ultimateForm
+  });
+  const content = await rawResponse.json()
+  console.log(content)
+  return content
+}
+
 export {registerUser, loginUser, validToken, logoutUser, createDeck,          getUserDecks, requestDeckInfo, addComment, addToFavorites, 
-searchUsers, searchDecks, rateDeck, authorizeUser}
+searchUsers, searchDecks, rateDeck, authorizeUser, uploadCard}

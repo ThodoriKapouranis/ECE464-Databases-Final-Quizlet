@@ -191,3 +191,14 @@ def authorizeUser(did):
     return {"status": 200}
   else:
     return {"status": 400}
+
+@app.route("/deck/<did>/add", methods=["POST"])
+def addCard(did):
+
+  data = request.form
+  files = request.files
+  pprint(data)
+  pprint(files)
+  file = files['fimg0']
+  file.save("borpa.png")
+  return {"status":200}
