@@ -4,6 +4,7 @@ from mongodb.settings import MONGO_URI
 
 app = Flask(__name__)
 app.config["MONGO_URI"] = MONGO_URI
+# app.config["UPLOAD_FOLDER"] = "media/"
 client = PyMongo(app)
 db = client.db
 

@@ -64,12 +64,14 @@ def searchDecks (*args, **kwargs):
 		print("(searchDecks) ERROR : No arguments given")
 		return None
 
-	name, tags = kwargs.get("name"), kwargs.get("tags")
+	name, tags, rating = kwargs.get("name"), kwargs.get("tags"), kwargs.get("rating")
 
 	# Build the query given available information
 	query = {}
 	if (name != None): query["name"] = {"$regex": name}
 	if (tags != None and tags !=['']): query["tags"] = {"$all": tags}
+	#not sure, might cause problem
+	if (rating != None): query['rating'] = {"$gte": rating}
 	
 	projection = {"comments": 0, "cards":0 }
 	
@@ -96,7 +98,9 @@ def getDeck( did: str):
 	projection = {"cards": 0, "admin_ids" : 0, "editor_ids" : 0, "whitelist_ids" : 0}
 	
 	return decks_db.find_one( query, projection )
+
 	
+		
 ############
 # Comments #
 ############
@@ -263,7 +267,19 @@ def authorizeUser ( did:ObjectId, utoken:str, tusername:str, level:int ):
 			decks_db.update_one(query,remove_pull)
 
 	return 0
+## Delete ##
 
+def deleteDeck( did: ObjectId, uid: ObjectId):
+	level = userAuthorizationLevel( did , uid )
+	if level > 2:
+		query = {"_id": did}
+
+		print (decks_db.delete_one(query))
+			
+
+	else:
+		print("INVALID MOVE, ACCESS DENIED")
+	
 
 if (__name__  == "__main__"):
 	users_db.drop()

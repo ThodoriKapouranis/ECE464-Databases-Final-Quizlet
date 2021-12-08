@@ -98,7 +98,9 @@ export default function DeckView() {
       <Text>Rating: {rating}/5</Text>
       {ratingBtns()}
 
-      <Button className="study-btn"> Study </Button>
+      <Link to={`study`}>
+        <Button className="study-btn"> Study </Button>
+      </Link>
       {addCardButton()}
       {authorizationBox()}
       

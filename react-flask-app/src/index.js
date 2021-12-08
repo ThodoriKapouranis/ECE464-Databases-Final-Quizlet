@@ -15,6 +15,7 @@ import DeckSearch from './pages/decks/DeckSearch';
 import DeckView from './pages/decks/DeckView';
 import UserSearch from './pages/users/UserSearch';
 import DeckAddCard from './pages/decks/DeckAddCard';
+import DeckStudy from './pages/decks/DeckStudy';
 
 ReactDOM.render(
   <React.StrictMode>
@@ -35,6 +36,7 @@ ReactDOM.render(
         
         <Route path="/decks/:did" element={<DeckView/>} />
         <Route path="/decks/:did/add" element={<DeckAddCard/>} />
+        <Route path="/decks/:did/study" element={<DeckStudy/>} />
 
       </Routes>
     </BrowserRouter>

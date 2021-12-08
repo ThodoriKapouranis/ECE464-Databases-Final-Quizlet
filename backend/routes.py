@@ -1,8 +1,11 @@
 import json
+import secrets
+import os
 from pprint import pprint
 from bson.objectid import ObjectId
-from flask import request
+from flask import request, send_from_directory
 from bson.json_util import dumps, loads
+from werkzeug.datastructures import FileStorage
 from main import app
 from mongodb import users, decks, auths, cards
 
@@ -10,6 +13,7 @@ from mongodb import users, decks, auths, cards
 # 200 code :: Good 
 # 400 code :: Bad Request (use as generic error code)
 # 404 code :: Requested information DNE (good response, but db object DNE)
+MEDIA_PATH = "media/"
 
 @app.route("/")
 def hello_world():
@@ -192,13 +196,76 @@ def authorizeUser(did):
   else:
     return {"status": 400}
 
+#ftxt0
+#fimg34
+class Tag:
+  def __init__(self, tag):
+    self.side = tag[0]
+    self.type = tag[1:4]
+    self.id = tag[4:]
+
+
 @app.route("/deck/<did>/add", methods=["POST"])
 def addCard(did):
 
   data = request.form
   files = request.files
+  token = request.headers["token"]
+
+  front = {}
+  back = {}
+  pprint(token)
   pprint(data)
-  pprint(files)
-  file = files['fimg0']
-  file.save("borpa.png")
-  return {"status":200}
+  
+  # These are all the text fields
+  for key in data:
+    tag = Tag(key)
+    field = {tag.type: data[key]} # {"img", URL}
+    if (tag.side == "f"):
+      front[tag.id] = field  # {0 : {"img", URL}}
+    elif (tag.side == "b"):
+      back[tag.id] = field
+
+  for key in files:
+    tag = Tag(key)
+    secret = secrets.token_hex()
+    file = files[key]
+    field = {tag.type: secret}
+    file.save(MEDIA_PATH + secret)
+
+    if (tag.side == "f"):
+      front[tag.id] = field  # {0 : {"img", URL}}
+    elif (tag.side == "b"):
+      back[tag.id] = field
+
+  pprint(front)
+  pprint(back)
+
+  # Use ORM function to actually create this object
+  res = cards.createCard( ObjectId(did), token, front, back)
+  if res != -1:
+    return {"status": 200}
+  else:
+    return {'status': 400}
+
+
+@app.route('/media/<path:path>')
+def send_media(path):
+  return send_from_directory( MEDIA_PATH, path )
+
+@app.route("/deck/<did>/study", methods=["GET"])
+def getFullDeck(did):
+  token = request.headers["token"]
+  # see if this function works :)
+  # cards.getDecksCards
+  res = cards.getDecksCards(ObjectId(did), token)
+  res = json.loads( dumps(res) ) 
+  return {"status": 200, "cards": res} 
+
+@app.route("/deck/<did>", methods = ["DELETE"])
+def deckDelete(did):
+  utoken = request.headers ["token"]
+  uid = auths.getUid(utoken)
+  res = decks.deleteDeck(did, uid)
+
+  return {"status": 200, "deck": res}

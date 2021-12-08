@@ -234,5 +234,23 @@ async function uploadCard(did, frontForm, backForm){
   return content
 }
 
-export {registerUser, loginUser, validToken, logoutUser, createDeck,          getUserDecks, requestDeckInfo, addComment, addToFavorites, 
-searchUsers, searchDecks, rateDeck, authorizeUser, uploadCard}
+async function studyDeck(did){
+  let token = localStorage.getItem("token")
+  const rawResponse = await fetch(`/deck/${did}/study`, {
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'token': token,
+    },
+  });
+  const content = await rawResponse.json()
+  console.log(content)
+  return content
+}
+export {
+  registerUser, loginUser, validToken, logoutUser, createDeck,
+  getUserDecks, requestDeckInfo, addComment, addToFavorites, 
+  searchUsers, searchDecks, rateDeck, authorizeUser, uploadCard,
+  studyDeck
+}

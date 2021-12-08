@@ -114,24 +114,7 @@ export default function DeckAddCard() {
 
     let frontForm = new FormData(front)
     let backForm = new FormData(back)
-
-    // for (var [key, value] of frontForm.entries()) { 
-    //   let reader = new FileReader()
-    //   reader.onload = (event) => console.log(event.target.result);
-    //   if (typeof(value) === "object" ){
-    //     frontForm.set(key, reader.readAsDataURL(value))
-    //   }
-    // }
-
-    // for (var [key, value] of backForm.entries()) { 
-    //   let reader = new FileReader()
-    //   reader.onload = (event) => console.log(event.target.result);
-    //   if (typeof(value) === "object" ){
-    //     backForm.set(key, reader.readAsDataURL(value))
-    //   }
-    // }
     uploadCard(did, frontForm, backForm)
-
   }
 
   return (

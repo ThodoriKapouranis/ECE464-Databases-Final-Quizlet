@@ -27,8 +27,13 @@ def createCard ( did:ObjectId, utoken:str, front:'list[dict]', back:'list[dict]'
   Creates a card object and appends it to the decks "cards" field.
   '''
   # Check valid user, valid priveledges
-  if  not ( uid := auths.getUid(utoken) ) : return -1
-  if ( (level := decks.userAuthorizationLevel(did, uid)) < 1) : return -1
+  if  not ( uid := auths.getUid(utoken) ) : 
+    print("uid doesnt exist for token ??")
+    return -1
+
+  if ( decks.userAuthorizationLevel(did, uid) < 1) : 
+    print("user has no access to this deck ??")
+    return -1
   # Insert card into the cards collection
   insertResult = cards_db.insert_one(createCardObject(front, back))
 
@@ -73,6 +78,17 @@ def createCardCopy ( cdid:ObjectId, tdid:ObjectId, utoken:str,  cid:ObjectId, *a
     deckUpdate = {"$push": {"cards": insertResult.inserted_id}}
     return decks_db.update_one( deckQuery, deckUpdate )
 
+def deleteCards (did: ObjectId, cid: ObjectId, uid: ObjectId, utoken: str):
+  
+  level = decks.userAuthorizationLevel( did , uid )
+  if ( level > 2):
+    query = {"_id": did }
+    pull = {"$pull": {"cards": cid }}
+    decks_db.update(query, pull)
+  else:
+    print("INVALID MOVE, ACCESS DENIED")
+  return 0
+
 def getDecksCards ( did:ObjectId, utoken:str ):
   '''
   Returns deck's cards if the user is priviledged.
@@ -92,6 +108,9 @@ def getDecksCards ( did:ObjectId, utoken:str ):
       cardIds.append(j)
 
   return cards_db.find( {"_id": {'$in' :cardIds} } )
+
+
+
 
 if (__name__  == "__main__"):
 
