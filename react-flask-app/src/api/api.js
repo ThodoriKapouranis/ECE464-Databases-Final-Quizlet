@@ -116,7 +116,6 @@ async function requestDeckInfo(did){
     body: JSON.stringify({"token": token})
   });
   const content = await rawResponse.json()
-  content.deck.comments.reverse()
   console.log(content)
   return content
 }
@@ -248,9 +247,40 @@ async function studyDeck(did){
   console.log(content)
   return content
 }
+
+async function deleteDeck(did){
+  let token = localStorage.getItem("token")
+  const rawResponse = await fetch(`/deck/${did}`, {
+    method: 'DELETE',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'token': token,
+    },
+  });
+  const content = await rawResponse.json()
+  console.log(content)
+  return content
+}
+
+async function deleteCard(did, cid){
+  let token = localStorage.getItem("token")
+  const rawResponse = await fetch(`/deck/${did}/card/${cid}`, {
+    method: 'DELETE',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'token': token,
+    },
+  });
+  const content = await rawResponse.json()
+  console.log(content)
+  return content
+}
+
 export {
   registerUser, loginUser, validToken, logoutUser, createDeck,
   getUserDecks, requestDeckInfo, addComment, addToFavorites, 
   searchUsers, searchDecks, rateDeck, authorizeUser, uploadCard,
-  studyDeck
+  studyDeck, deleteDeck, deleteCard
 }

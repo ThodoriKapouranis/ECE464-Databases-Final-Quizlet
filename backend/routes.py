@@ -2,6 +2,7 @@ import json
 import secrets
 import os
 from pprint import pprint
+from bson import json_util
 from bson.objectid import ObjectId
 from flask import request, send_from_directory
 from bson.json_util import dumps, loads
@@ -256,16 +257,34 @@ def send_media(path):
 @app.route("/deck/<did>/study", methods=["GET"])
 def getFullDeck(did):
   token = request.headers["token"]
-  # see if this function works :)
-  # cards.getDecksCards
+  
+  # res[0] user auth
+  # res[1] cursor object
   res = cards.getDecksCards(ObjectId(did), token)
-  res = json.loads( dumps(res) ) 
-  return {"status": 200, "cards": res} 
+  if (res[1] != -1):
+    res[1] = json.loads( dumps(res[1]) ) 
+    return {"status": 200, "auth": res[0], "cards": res[1]} 
+  else :
+    return {"status": 400}
 
 @app.route("/deck/<did>", methods = ["DELETE"])
 def deckDelete(did):
   utoken = request.headers ["token"]
   uid = auths.getUid(utoken)
-  res = decks.deleteDeck(did, uid)
+  res = decks.deleteDeck( ObjectId(did), uid )
+  if (res == 0 ):
+    # res = json_util.loads( dumps(res) )
+    return {"status": 200}
+  else:
+    return {"status": res}
 
-  return {"status": 200, "deck": res}
+
+@app.route("/deck/<did>/card/<cid>", methods=["DELETE"])
+def cardDelete(did, cid):
+  utoken = request.headers["token"]
+  uid = auths.getUid(utoken)
+  res = cards.deleteCard(ObjectId(did), ObjectId(cid), uid)
+  if (res == 0):
+    return {"status": 200}
+  else:
+    return {"status": 400}

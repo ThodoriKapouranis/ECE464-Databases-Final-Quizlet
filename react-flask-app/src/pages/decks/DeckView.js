@@ -4,7 +4,7 @@ import { Box, Flex, HStack, Text, VStack } from '@chakra-ui/layout'
 import React from 'react'
 import { render } from 'react-dom'
 import { useParams } from 'react-router'
-import { requestDeckInfo, addComment, addToFavorites, rateDeck, authorizeUser } from '../../api/api'
+import { requestDeckInfo, addComment, addToFavorites, rateDeck, authorizeUser, deleteDeck } from '../../api/api'
 import Header from '../../components/header'
 import "../forms.css"
 import "./decks.css"
@@ -90,21 +90,43 @@ export default function DeckView() {
     })
   }
 
+  const nameDisplay = (name) => 
+    <HStack>
+      <Text className="deck-name-display"> {name}</Text>
+      {auth>2 ? <Button onClick={requestDeckDelete}>❌</Button> : <></>}
+    </HStack>
+  
+  const requestDeckDelete = () => {
+    deleteDeck(did).then( data => {
+      if (data["status"] === 200){
+        alert("Deck successfully deleted")
+        window.location.reload()
+      }
+      else{
+        alert("Could not delete deck")
+      }
+
+    })
+  }
+    
+  const studyButton = <Link to={`study`}>
+    <Button className="study-btn"> Study </Button>
+  </Link>
   const renderDeck = (deck) => <>
     <VStack>
-      <Text className="deck-name-display"> {deck.name}</Text> 
+      {nameDisplay(deck.name)}
       <Button className="fav-btn" onClick={favoriteDeck} > 💖  </Button>
-      
+      { auth===0 ? <Text color={"red"}>You are not whitelisted</Text> : <></>}
       <Text>Rating: {rating}/5</Text>
-      {ratingBtns()}
+      { auth>0 ? ratingBtns() : <></>}
 
-      <Link to={`study`}>
-        <Button className="study-btn"> Study </Button>
-      </Link>
-      {addCardButton()}
-      {authorizationBox()}
       
-      {commentSearch()}
+      { auth>0 ? studyButton : <></> }
+
+      { auth>1 ? addCardButton() : <></>}
+      { auth>1 ? authorizationBox() : <></>}
+      
+      { auth>0 ? commentSearch() :<></>}
 
       {renderComments(deck.comments)}
     </VStack>
@@ -132,16 +154,19 @@ export default function DeckView() {
 
   React.useEffect(() => {
     requestDeckInfo(did).then( data => {
-      setDeck(data.deck)
-      setRating(data.rating)
-      setAuth(data.authLevel)
+      if (data["status"] === 200){
+        data.deck.comments.reverse()
+        setDeck(data.deck)
+        setRating(data.rating)
+        setAuth(data.authLevel)
+      }
     })
   }, [did])
 
   return (
     <div>
       <Header/>
-      { deck ? renderDeck(deck) : <>WAAH</> }
+      { deck ? renderDeck(deck) : <Text color="red">Could not access deck</Text> }
       {/* <p> Make an API call to get the rating, comments, etc </p>
       <p> Actual card view will be under a different url probably</p>
       <p> Something like deck/study/:did maybe</p>

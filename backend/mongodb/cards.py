@@ -78,16 +78,17 @@ def createCardCopy ( cdid:ObjectId, tdid:ObjectId, utoken:str,  cid:ObjectId, *a
     deckUpdate = {"$push": {"cards": insertResult.inserted_id}}
     return decks_db.update_one( deckQuery, deckUpdate )
 
-def deleteCards (did: ObjectId, cid: ObjectId, uid: ObjectId, utoken: str):
+def deleteCard ( did: ObjectId, cid: ObjectId, uid: ObjectId ):
   
   level = decks.userAuthorizationLevel( did , uid )
   if ( level > 2):
     query = {"_id": did }
     pull = {"$pull": {"cards": cid }}
     decks_db.update(query, pull)
+    return 0
   else:
     print("INVALID MOVE, ACCESS DENIED")
-  return 0
+    return 403
 
 def getDecksCards ( did:ObjectId, utoken:str ):
   '''
@@ -95,7 +96,7 @@ def getDecksCards ( did:ObjectId, utoken:str ):
   '''
 
   if not ( uid := auths.getUid(utoken) ): return -1
-  if ( userAuth := decks.userAuthorizationLevel(did, uid) < 1 ):
+  if ( (userAuth := decks.userAuthorizationLevel(did, uid)) < 1 ):
     print("User does not have access")
     return -1
 
@@ -107,7 +108,7 @@ def getDecksCards ( did:ObjectId, utoken:str ):
     for j in i["cards"]:
       cardIds.append(j)
 
-  return cards_db.find( {"_id": {'$in' :cardIds} } )
+  return [ userAuth, cards_db.find({"_id": {'$in' :cardIds} }) ]
 
 
 

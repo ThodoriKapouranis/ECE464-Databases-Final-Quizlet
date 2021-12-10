@@ -271,15 +271,13 @@ def authorizeUser ( did:ObjectId, utoken:str, tusername:str, level:int ):
 
 def deleteDeck( did: ObjectId, uid: ObjectId):
 	level = userAuthorizationLevel( did , uid )
+	
 	if level > 2:
 		query = {"_id": did}
-
-		print (decks_db.delete_one(query))
-			
-
+		decks_db.delete_one(query)
+		return 0
 	else:
-		print("INVALID MOVE, ACCESS DENIED")
-	
+		return 403
 
 if (__name__  == "__main__"):
 	users_db.drop()
