@@ -126,9 +126,10 @@ async function addComment(did, comment){
     method: 'POST',
     headers: {
       'Accept': 'application/json',
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      'token': token
     },
-    body: JSON.stringify({comment:comment, token:token})
+    body: JSON.stringify({comment:comment})
   });
   const content = await rawResponse.json()
   console.log(content)

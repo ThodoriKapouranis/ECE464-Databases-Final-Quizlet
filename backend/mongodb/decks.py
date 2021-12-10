@@ -113,11 +113,13 @@ def createCommentObject ( uid:ObjectId, username:name, content:str ):
 		"date_created": datetime.now()
 	}
 
-def addComment ( did:str, utoken:str, content:str ):
+def addComment ( did:ObjectId, utoken:str, content:str ):
 	
 	if not (uid := auths.getUid(utoken)):
 		print("Invalid user trying to comment!")
-		return -1
+		return 403
+	if not ( (level := userAuthorizationLevel(did, uid)) > 0):
+		return 403
 	name = users_db.find_one( {"_id": uid}, {"username":1})["username"]
 
 	comment = createCommentObject(uid, name, content)
@@ -126,7 +128,9 @@ def addComment ( did:str, utoken:str, content:str ):
 	update = {"$push": {"comments": comment}}
 	if not (decks_db.find_one_and_update(query, update) ):
 		print("Deck not found. Cannot comment.")
-		return -1
+		return 404
+	else:
+		return 200
 
 ###########
 # Ratings #
@@ -140,11 +144,14 @@ def createRatingObject ( uid:ObjectId, rating:int ):
 def addRating ( did:ObjectId, utoken:str, rating:int ):
 	if not (uid := auths.getUid(utoken)):
 		print("Invalid user trying to rate!")
-		return -1
+		return 403
+
+	if not ( (level := userAuthorizationLevel(did, uid)) > 0):
+		return 403
 	
 	if ( rating > 5 or rating < 0 ):
 		print("Invalid rating")
-		return -1
+		return 400
 	
 	ratingObject = createRatingObject(uid, rating)
 
@@ -153,11 +160,12 @@ def addRating ( did:ObjectId, utoken:str, rating:int ):
 	update = {"$set": {"ratings.$.rating": rating} }	
 	insert = {"$push": {"ratings": ratingObject} }
 
-
 	# Try to update a rating the user has already made for this deck.
 	# If no rating is found (matched_count==0), then insert new rating.
 	if ( decks_db.update_one(query_update, update).matched_count == 0 ):
 		decks_db.update_one(query_insert, insert)
+	
+	return 200
 
 def getRating( did: ObjectId ):
 	query = {"_id" : did}

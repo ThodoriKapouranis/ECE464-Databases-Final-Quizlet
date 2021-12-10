@@ -82,9 +82,12 @@ def deleteCard ( did: ObjectId, cid: ObjectId, uid: ObjectId ):
   
   level = decks.userAuthorizationLevel( did , uid )
   if ( level > 2):
-    query = {"_id": did }
+    deckQuery = {"_id": did }
+    cardQuery = {"_id": cid}
+    
     pull = {"$pull": {"cards": cid }}
-    decks_db.update(query, pull)
+    decks_db.update_one(deckQuery, pull)
+    cards_db.delete_one(cardQuery)
     return 0
   else:
     print("INVALID MOVE, ACCESS DENIED")

@@ -145,13 +145,10 @@ def getDeckInfo(did):
 def addComment(did):
   data = request.json
   comments = data["comment"]
-  token = data["token"]
+  token = request.headers["token"]
   # def addComment ( did:str, utoken:str, content:str ):
-  res = decks.addComment(ObjectId(did), token, comments )
-  if (res != -1):
-    return {"status":200}
-  else:
-    return {"status":400}
+  res = decks.addComment(ObjectId(did), token, comments)
+  return {"status": res}
 
 @app.route("/deck/<did>/favorite", methods=["POST"])
 def addToFavorite(did):
@@ -178,8 +175,7 @@ def addDeckRating(did):
   rating = data["rating"]
 
   res = decks.addRating(ObjectId(did), token, rating)
-  if (res != -1): return {"status":200}
-  else:           return {"status":400}
+  return {"status": res}
 
 # # Promote someone's auth lv
 @app.route("/deck/<did>/authorize", methods = ["POST"])
