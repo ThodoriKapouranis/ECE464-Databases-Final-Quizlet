@@ -19,13 +19,13 @@ users_db = db.users
 auths_db = db.auths
 decks_db = db.decks
 cards_db = db.cards
-source = "generator/"
-tags = open( source + "nouns.txt", "r")
+
+tags = open("nouns.txt", "r")
 line = tags.read()
 tag_arr = line.split(",")
 
 
-def createString(length):
+def createPassword(length):
     # choose from all lowercase letter
     char = string.ascii_letters + string.digits + string.punctuation
     result_str = ''.join(random.choice(char) for i in range(length))
@@ -40,59 +40,35 @@ def chooseNoun(arr, length):
 #create users
 def fillUser():
     email = ["@gmail.com", "@yahoo.com", "@hotmail.com", "@outlook.com"]
-    f_name = open(source + 'f_names.txt', "r")
+    f_name = open('f_names.txt', "r")
     #l_name = open('l_names.txt', "r")
     
     #idk why there is an error on my part for i, can u check for me :DDD
     for i, f_lines in enumerate(f_name):
-        f_lines = f_lines[:-1]
-        userEmail =  f_lines + str(i) + email[ random.randint(0,3) ]
-        pwd = createString(random.randint(8,15))
-        users.createUser (userEmail, f_lines, pwd)
+
+        email =  f_lines + i + random.choice(email)
+        pwd = createPassword(random.randint(8,15))
+
+        users.createUser (email, f_lines, pwd)
 
 def fillDeck():
     proj = {"name": 1}
-    user_list = users_db.find({}, {"_id":1})
+    user_list = users_db.aggregate([{"$proj": proj}])
 
 
     for line in user_list:
         for i in range(random.randint(1,10)):
-            name = chooseNoun(tag_arr, 1)[0]
+            name = chooseNoun(tag_arr, 1)
             uid = line["_id"]
             tags = chooseNoun(tag_arr, random.randint(1,10))
             priv = random.randint(0,1)
-            deck = decks.createDeckobject(name, tags, uid, bool(priv))
+            deck = deck.createDeckobject(name, tags, uid, bool(priv))
             result = decks_db.insert_one(deck)
-            print( "name:", name, " tags:", tags)
 
             userQuery = {"_id": uid}
             userUpdate = {"$push": {"created_decks": result.inserted_id} }
             resultUser = users_db.update_one(userQuery, userUpdate)
         
-def fillCard():
-    proj = {"name": 1}
-    deck_list = decks_db.find({}, {"_id": 1})
 
-    for line in deck_list:
-        for i in range(random.randint(1,10)):
-            front_str = createString(random.randint(20,40))
-            back_str = createString(random.randint(20,40))
-            front = [{"txt": front_str}]
-            back = [{"txt": back_str}]
-
-            did = line['_id']
-            insertResult = cards_db.insert_one(cards.createCardObject(front, back))
-
-            # Insert card id istanto the corresponding deck's "cards" field
-            deckQuery = {"_id": did}
-            deckUpdate = {"$push": {"cards": insertResult.inserted_id}}
-            resultcard = decks_db.update_one( deckQuery, deckUpdate) 
-
-            
-
-if __name__ == "__main__":
-    users_db.create_index(("email"), unique=True)
-    users_db.create_index(("username"), unique=True)
-    # fillUser()
-    #fillDeck()
-    fillCard()
+if __name__ == "main":
+    print("OK")
