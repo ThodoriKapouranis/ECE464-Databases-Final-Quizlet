@@ -36,8 +36,9 @@ export default function DeckSearch() {
     let search = window.location.search;
     let params = new URLSearchParams(search);
     let deckname = params.get('name')
+    let rating = params.get("rating")
     let tags = params.get('tags')
-    searchDecks(deckname, tags).then( data => {
+    searchDecks(deckname, rating, tags).then( data => {
       if (data.status === 200){
         setSearchResults(data.decks)
         setResultAmount(data.decks.length)

@@ -37,8 +37,7 @@ def createDeckobject( name:str, tags:"list[str]", uid:ObjectId, private:bool ):
 	}
 
 def createDeck ( name:str, tags:"list[str]", utoken:str, private:bool ):
-	
-	if not (uid := auths.getUid(utoken)) :
+	if not ((uid := auths.getUid(utoken)) != 0):
 		print("Invalid user!")
 		return -1
 	
@@ -71,11 +70,12 @@ def searchDecks (*args, **kwargs):
 	if (name != None): query["name"] = {"$regex": name}
 	if (tags != None and tags !=['']): query["tags"] = {"$all": tags}
 	#not sure, might cause problem
-	if (rating != None): query['rating'] = {"$gte": rating}
+	if (rating != None and rating != ''): query['rating'] = {"$gte": rating}
 	
 	projection = {"comments": 0, "cards":0 }
 	
-	return decks_db.find(query, projection)
+	res =  decks_db.find(query, projection)
+	return res
 
 def getUsersDecks( username:str ):
 	query = {"username": username}

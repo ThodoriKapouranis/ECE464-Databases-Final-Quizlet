@@ -13,10 +13,13 @@ export default function DeckSearchBar() {
   const searchArea = () => <>
     <Text className="large-text"> Search Decks </Text>
     <Input placeholder="Deck name" width="90%" className="text-form" id="deckname"/> 
-    <Input placeholder="Tags, space seperated" width="90%" className="text-form" id="tags"/> 
-    
+    <Input placeholder="Tags, space seperated" width="90%" className="text-form" id="tags"/>   
+
     <Flex w="100%" flexDirection="row"> 
-      <Box w="70%"></Box>
+      <Box w="30%">
+        <Input placeholder="Rating" width="100%" className="text-form" id="rating"/> 
+      </Box>
+      <Box w="40%"></Box>
       <Box w="30%">
         <Button class="search-btn" cursor="pointer" onClick={searchDecks}> 
           Search 
@@ -27,13 +30,14 @@ export default function DeckSearchBar() {
 
   const searchDecks = () => {
     let deckName = document.getElementById("deckname").value
+    let rating = document.getElementById("rating").value
     // Grab the tags from the tag search bar, split whitespace
     let tags = document.getElementById("tags").value.split(" ")
     // Filter out the empty splits (extra inputed whitespaces)
     tags = tags.filter( c => c !== "" )
     // Dont bother with keeping unique values, let backend do that shit
 
-    let searchURL = `/decks/search/?name=${deckName}&tags=`
+    let searchURL = `/decks/search/?name=${deckName}&rating=${rating}&tags=`
 
     for ( const  v of Object.values(tags) ){
       searchURL += v + ","

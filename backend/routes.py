@@ -70,9 +70,15 @@ def searchUsers(username):
 
 @app.route("/search/decks/", methods=["GET"])
 def searchDecks():
-  user = request.args.get('name')
+  name = request.args.get('name')
   tags = request.args.get('tags').split(",")
-  res = decks.searchDecks(name=user, tags=tags)
+  rating = request.args.get('rating')
+  if rating != "":
+    rating = int(rating)
+  pprint(name)
+  pprint(tags)
+  pprint(rating)
+  res = decks.searchDecks(name=name, tags=tags, rating=rating)
   if ( res != None):
     res = json.loads( dumps(res) )
     return { "status":200, "decks": res }
@@ -248,7 +254,7 @@ def addCard(did):
 
 @app.route('/media/<path:path>')
 def send_media(path):
-  return send_from_directory( MEDIA_PATH, path )
+  return send_from_directory( MEDIA_PATH, path, as_attachment=True )
 
 @app.route("/deck/<did>/study", methods=["GET"])
 def getFullDeck(did):

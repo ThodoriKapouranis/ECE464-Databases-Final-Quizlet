@@ -50,9 +50,13 @@ export default function DeckStudy() {
               /> 
               </Box>
     
-    else if (field_type === 'aud')
-      return <p>Audio is supposed to go here :|</p>
-
+    else if (field_type === 'aud'){
+      return <Box>
+              <audio 
+                controls src={`http://127.0.0.1:5000/media/${field_content}`}> 
+              </audio>
+              </Box>
+    }
   })
 
   const requestCardDelete = (did, cid) => {

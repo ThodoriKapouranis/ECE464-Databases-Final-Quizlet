@@ -163,8 +163,8 @@ async function searchUsers(username){
   return content
 }
 
-async function searchDecks(deckname,tags){
-  const rawResponse = await fetch(`/search/decks/?name=${deckname}&tags=${tags}`, {
+async function searchDecks(deckname, rating, tags){
+  const rawResponse = await fetch(`/search/decks/?name=${deckname}&rating=${rating}&tags=${tags}`, {
     method: "get",
     headers: {
       'Content-Type': 'application/json'
