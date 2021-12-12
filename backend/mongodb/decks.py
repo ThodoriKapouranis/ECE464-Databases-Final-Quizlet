@@ -70,7 +70,7 @@ def searchDecks (*args, **kwargs):
 	if (name != None): query["name"] = {"$regex": name}
 	if (tags != None and tags !=['']): query["tags"] = {"$all": tags}
 	#not sure, might cause problem
-	if (rating != None and rating != ''): query['rating'] = {"$gte": rating}
+	if (rating != None and rating != ''): query['$expr'] = {"$gte": [{"$avg": "$ratings.rating"}, rating] }
 	
 	projection = {"comments": 0, "cards":0 }
 	
