@@ -52,14 +52,14 @@ def fillUser():
 
 def fillDeck():
     proj = {"name": 1}
-    user_list = users_db.find({}, {"_id":1})
-
+    user_list = list(users_db.find({}, {"_id":1, "username":1}))
+    tot_user = users_db.count_documents({})
 
     for line in user_list:
-        for i in range(random.randint(1,10)):
+        for i in range(random.randint(1,5)):
             name = chooseNoun(tag_arr, 1)[0]
             uid = line["_id"]
-            tags = chooseNoun(tag_arr, random.randint(1,10))
+            tags = chooseNoun(tag_arr, random.randint(1,6))
             priv = random.randint(0,1)
             deck = decks.createDeckobject(name, tags, uid, bool(priv))
             result = decks_db.insert_one(deck)
@@ -68,7 +68,35 @@ def fillDeck():
             userQuery = {"_id": uid}
             userUpdate = {"$push": {"created_decks": result.inserted_id} }
             resultUser = users_db.update_one(userQuery, userUpdate)
-        
+
+            # Make 1-5 random users make comments
+            for x in range(random.randint(1,5)):
+                temp_user = user_list[random.randint(0,tot_user-1)]
+
+                content = createString(random.randint(10,20))
+                comment = decks.createCommentObject(temp_user["_id"], temp_user["username"], content)
+                
+                query = {"_id": result.inserted_id }
+                update = {"$push": {"comments": comment}}
+                decks_db.find_one_and_update(query, update)
+            
+            # Make 1-5 random users make ratings
+            for x in range(random.randint(1,10)):
+                temp_user = user_list[random.randint(0,tot_user-1)]
+
+                rating = random.randint(1,5)
+                ratingObject = decks.createRatingObject(temp_user["_id"], rating)
+
+                query_update = {"_id": result.inserted_id, "ratings.uid": temp_user["_id"] }
+                query_insert = {"_id": result.inserted_id}
+                update = {"$set": {"ratings.$.rating": rating} }	
+                insert = {"$push": {"ratings": ratingObject} }
+                
+                if ( decks_db.update_one(query_update, update).matched_count == 0 ):
+                    decks_db.update_one(query_insert, insert)
+
+
+
 def fillCard():
     proj = {"name": 1}
     deck_list = decks_db.find({}, {"_id": 1})
@@ -88,11 +116,12 @@ def fillCard():
             deckUpdate = {"$push": {"cards": insertResult.inserted_id}}
             resultcard = decks_db.update_one( deckQuery, deckUpdate) 
 
-            
+# def fillRating():
+
 
 if __name__ == "__main__":
     users_db.create_index(("email"), unique=True)
     users_db.create_index(("username"), unique=True)
-    # fillUser()
-    #fillDeck()
+    #num = fillUser()
+    # fillDeck()
     fillCard()

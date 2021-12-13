@@ -39,6 +39,7 @@ def chooseNoun(arr, length):
     return tag
 #create users
 def fillUser():
+    tot_user = 0
     email = ["@gmail.com", "@yahoo.com", "@hotmail.com", "@outlook.com"]
     f_name = open('f_names.txt', "r")
     #l_name = open('l_names.txt', "r")
@@ -50,8 +51,11 @@ def fillUser():
         pwd = createPassword(random.randint(8,15))
 
         users.createUser (email, f_lines, pwd)
+        tot_user += 1
+    
+    return tot_user
 
-def fillDeck():
+def fillDeck(tot_user):
     proj = {"name": 1}
     user_list = users_db.aggregate([{"$proj": proj}])
 
@@ -68,6 +72,22 @@ def fillDeck():
             userQuery = {"_id": uid}
             userUpdate = {"$push": {"created_decks": result.inserted_id} }
             resultUser = users_db.update_one(userQuery, userUpdate)
+
+
+
+
+def fillRating(uid, did):
+    proj = {"name": 1}
+    user_list = users_db.aggregate([{"$proj": proj}])
+
+    for line in user_list:
+        
+        ratingObject = decks.createRatingObject(uid, rating)
+
+        query_update = {"_id": did, "ratings.uid":uid }
+        query_insert = {"_id": did}
+        update = {"$set": {"ratings.$.rating": rating} }	
+        insert = {"$push": {"ratings": ratingObject} }
         
 
 if __name__ == "main":
